@@ -131,6 +131,44 @@ input[type="text"] {
   background: var(--box);
   color: var(--fg);
 }
+/* =====================
+   SLIDE ANIMATION
+   ===================== */
+.slide-out-left {
+  animation: slideOutLeft 0.18s ease-in forwards;
+}
+
+.slide-out-right {
+  animation: slideOutRight 0.18s ease-in forwards;
+}
+
+.slide-in-left {
+  animation: slideInLeft 0.18s ease-out forwards;
+}
+
+.slide-in-right {
+  animation: slideInRight 0.18s ease-out forwards;
+}
+
+@keyframes slideOutLeft {
+  from { transform: translateX(0); opacity: 1; }
+  to   { transform: translateX(-40px); opacity: 0; }
+}
+
+@keyframes slideOutRight {
+  from { transform: translateX(0); opacity: 1; }
+  to   { transform: translateX(40px); opacity: 0; }
+}
+
+@keyframes slideInLeft {
+  from { transform: translateX(40px); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes slideInRight {
+  from { transform: translateX(-40px); opacity: 0; }
+  to   { transform: translateX(0); opacity: 1; }
+}
 </style>
 </head>
 
@@ -233,9 +271,44 @@ function renderDay() {
 /* =====================
    NAV
    ===================== */
-function nextDay(){ currentDate.setDate(currentDate.getDate()+1); renderDay(); }
-function prevDay(){ currentDate.setDate(currentDate.getDate()-1); renderDay(); }
+function nextDay() {
+  animateDay("left", () => {
+    currentDate.setDate(currentDate.getDate() + 1);
+  });
+}
 
+function prevDay() {
+  animateDay("right", () => {
+    currentDate.setDate(currentDate.getDate() - 1);
+  });
+}
+
+function animateDay(direction, changeDate) {
+  const card = document.getElementById("dayCard");
+
+  // raus animieren
+  card.classList.add(
+    direction === "left" ? "slide-out-left" : "slide-out-right"
+  );
+
+  setTimeout(() => {
+    changeDate();        // Datum ändern
+    renderDay();         // Neu rendern
+
+    // rein animieren
+    card.classList.remove("slide-out-left", "slide-out-right");
+    card.classList.add(
+      direction === "left" ? "slide-in-right" : "slide-in-left"
+    );
+
+    // Cleanup
+    setTimeout(() => {
+      card.classList.remove("slide-in-left", "slide-in-right");
+    }, 180);
+
+  }, 180);
+}
+``
 /* =====================
    DARK MODE
    ===================== */
