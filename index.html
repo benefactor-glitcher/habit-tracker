@@ -141,10 +141,21 @@ input[type="text"] {
   from { transform: translateX(-40px); opacity: 0; }
   to { transform: translateX(0); opacity: 1; }
 }
+
+.today-btn {
+  margin-top: 4px;
+  padding: 4px 10px;
+  font-size: 0.75rem;
+  border-radius: 999px;
+  background: rgba(37, 99, 235, 0.15);
+  color: var(--accent);
+}
+
 </style>
 </head>
 
 <body>
+
 
 <header>
   <div class="header-row">
@@ -152,6 +163,13 @@ input[type="text"] {
 
     <div class="header-center">
       <strong id="dateLabel"></strong>
+      <button
+        id="todayBtn"
+        class="today-btn"
+        onclick="goToday()"
+        style="display:none">
+        Heute
+      </button>
     </div>
 
     <button class="icon-btn" onclick="nextDay()">→</button>
@@ -225,6 +243,14 @@ function renderDay() {
 
   noteInput.value = data.note || "";
   noteInput.onchange = () => {
+// Heute-Button anzeigen/verstecken
+  const todayBtn = document.getElementById("todayBtn");
+  const today = new Date();
+
+  const isToday =
+    currentDate.toDateString() === today.toDateString();
+
+  todayBtn.style.display = isToday ? "none" : "inline-block";
     data.note = noteInput.value;
     localStorage.setItem(key, JSON.stringify(data));
   };
@@ -236,6 +262,10 @@ function nextDay() {
 }
 function prevDay() {
   animateDay("right", () => currentDate.setDate(currentDate.getDate() - 1));
+}
+function goToday() {
+  currentDate = new Date();
+  renderDay();
 }
 
 function animateDay(direction, changeDate) {
