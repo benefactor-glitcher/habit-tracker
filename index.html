@@ -2,291 +2,283 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<title>Habit Tracker Dashboard – stabil</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>My Way</title>
 
 <style>
-/* -------- Basis -------- */
+/* =====================
+   THEME
+   ===================== */
 :root {
   --bg: #f2f4f8;
   --fg: #111;
   --box: #ffffff;
-  --border: #ddd;
-  --accent: #3b82f6;
-  --muted: #666;
-  font-size: 14px; /* Basis für iPhone SE */
+  --border: #d1d5db;
+  --accent: #2563eb;
+  --muted: #6b7280;
+  font-size: 15px;
 }
 
+body.dark {
+  --bg: #0f172a;
+  --fg: #e5e7eb;
+  --box: #1e293b;
+  --border: #334155;
+  --muted: #9ca3af;
+}
+
+/* =====================
+   BASE
+   ===================== */
 body {
+  margin: 0;
+  padding: 12px;
   font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
   background: var(--bg);
   color: var(--fg);
-  padding: 12px;
-  margin: 0;
 }
 
-/* -------- Dark Mode -------- */
-body.dark {
-  background: #0f172a;
-  color: #e5e7eb;
+/* =====================
+   STICKY HEADER
+   ===================== */
+header {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  padding-bottom: 8px;
+  z-index: 50;
 }
 
-body.dark .box {
-  background: #1e293b;
+.header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 
-/* -------- Typo -------- */
-h1 {
-  font-size: 1.4rem;
-  margin: 4px 0;
-}
-h2 {
-  font-size: 1.1rem;
-  margin: 6px 0;
-}
-small {
-  color: var(--muted);
-  font-size: 0.8rem;
-}
-
-/* -------- Boxen -------- */
-.box {
-  background: var(--box);
-  padding: 10px;
-  margin-bottom: 10px;
-  border-radius: 10px;
-  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
-}
-
-/* -------- Tabelle -------- */
-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.75rem; /* sehr wichtig fürs SE */
-}
-
-th, td {
-  border: 1px solid var(--border);
-  padding: 4px;
+.header-center {
   text-align: center;
 }
 
-th {
-  background: rgba(0,0,0,0.04);
+.header-center strong {
+  display: block;
 }
 
-/* -------- Große Checkboxen -------- */
-input[type="checkbox"] {
-  width: 20px;
-  height: 20px;
-  accent-color: var(--accent);
+small {
+  color: var(--muted);
 }
 
-/* -------- Texteingaben -------- */
-input[type="text"] {
-  width: 100%;
-  font-size: 0.75rem;
-  padding: 4px;
-  border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--box);
-  color: var(--fg);
-}
-
-/* -------- Buttons -------- */
+/* =====================
+   BUTTONS
+   ===================== */
 button {
-  font-size: 0.8rem;
-  padding: 6px 10px;
-  border-radius: 8px;
   border: none;
   background: var(--accent);
   color: white;
+  padding: 6px 10px;
+  border-radius: 8px;
+  font-size: 0.85rem;
+}
+
+.icon-btn {
+  padding: 6px 8px;
+  font-size: 1rem;
+}
+
+/* =====================
+   DAY CARD
+   ===================== */
+.day-card {
+  background: var(--box);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px;
+  margin-top: 12px;
+}
+
+/* =====================
+   HABITS
+   ===================== */
+.habit {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 6px;
+  border-bottom: 1px solid var(--border);
+  font-size: 0.95rem;
+}
+
+.habit:last-child {
+  border-bottom: none;
+}
+
+input[type="checkbox"] {
+  width: 26px;
+  height: 26px;
+  accent-color: var(--accent);
+}
+
+/* =====================
+   NOTES
+   ===================== */
+input[type="text"] {
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px;
+  font-size: 0.9rem;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--box);
+  color: var(--fg);
 }
 </style>
 </head>
 
 <body>
 
-<h1>🔥 My Way 2 the Top 💪🏽</h1>
-<small>Stabil · Lokal · Nachvollziehbar</small>
+<header>
+  <div class="header-row">
+    <button class="icon-btn" onclick="prevDay()">←</button>
 
-<button id="darkToggle">🌙 Dark Mode</button>
+    <div class="header-center">
+      <strong id="dateLabel"></strong>
+      <small id="weekLabel"></small>
+    </div>
 
-<div class="box">
-  <h2>💡 Tagesimpuls</h2>
-  <p class="quote" id="quote"></p>
-</div>
+    <button class="icon-btn" onclick="nextDay()">→</button>
+  </div>
 
-<div class="box">
-  <button onclick="prevWeek()">← Woche</button>
-  <button onclick="nextWeek()">Woche →</button>
-  <strong id="weekLabel"></strong>
-</div>
+  <div class="header-row" style="margin-top:6px">
+    <small>🔥 My Way 2 the Top</small>
+    <button id="darkToggle" class="icon-btn">🌙</button>
+  </div>
+</header>
 
-<div class="box">
-<table>
-<thead>
-<tr>
-  <th>Datum</th>
-  <th>Schlaf (22-5)</th>
-  <th>Yoga</th>
-  <th>3x Fitnessringe</th>
-  <th>10k Steps</th>
-  <th>Protein mind. 200g</th>
-  <th>Wasser mind. 2L</th>
-  <th>No P*rn</th>
-  <th>Teeth a.m.</th>
-  <th>Teeth p.m.</th>
-  <th>Fokus</th>
-  <th>Selfcare</th>
-</tr>
-</thead>
-<tbody id="tableBody"></tbody>
-</table>
-</div>
+<section class="day-card" id="dayCard"></section>
 
-<div class="box">
-  <h2>🎯 Fokus‑Habit der Woche</h2>
-  <input id="focusText" placeholder="z. B. kein Handy ab 21:00">
-</div>
-
-<div class="box">
-  <h2>🔥 Streak</h2>
-  <p id="streak"></p>
-</div>
+<input id="noteInput" placeholder="Notiz / Selfcare / Gedanken…">
 
 <script>
-// ---------------- BASIC SETUP ----------------
+/* =====================
+   STATE
+   ===================== */
 const HABITS = [
-  "sleep","morning","strength","steps",
-  "protein","water","noporn","teethAM","teethPM","focus"
+  "Schlafhygiene eingehalten (22:00–05:00)",
+  "Morgensport / Yoga",
+  "Alle 3x Aktivitätsringe abgeschlossen",
+  "10k Alltagsschritte gemacht",
+  "Protein mind. 200g",
+  "Pures Wasser mind. 2L",
+  "No P*rn",
+  "Zähne putzen Morgens & Abends"
 ];
 
-let weekOffset = 0;
+let currentDate = new Date();
 
-// ---------------- DATE HELPERS ----------------
-function mondayOf(date) {
-  const d = new Date(date);
-  const day = d.getDay() || 7;
-  d.setDate(d.getDate() - day + 1);
-  return d;
-}
-function iso(d) {
-  return d.toISOString().slice(0,10);
-}
-function de(d) {
-  return d.toLocaleDateString("de-DE");
+/* =====================
+   DATE HELPERS
+   ===================== */
+function iso(d){ return d.toISOString().slice(0,10); }
+
+function weekNumber(d){
+  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
 }
 
-// ---------------- RENDER ----------------
-function render() {
-  const base = new Date();
-  base.setDate(base.getDate() + weekOffset);
-  const monday = mondayOf(base);
+/* =====================
+   RENDER
+   ===================== */
+function renderDay() {
+  const key = iso(currentDate);
+  const data = JSON.parse(localStorage.getItem(key)) || {};
 
-  weekLabel.textContent = "KW ab " + de(monday);
+  dateLabel.textContent =
+    currentDate.toLocaleDateString("de-DE", { weekday:"long", day:"2-digit", month:"2-digit", year:"numeric" });
 
-  const tbody = document.getElementById("tableBody");
-  tbody.innerHTML = "";
+  weekLabel.textContent = "Kalenderwoche " + weekNumber(currentDate);
 
-  let streakCount = 0;
+  const card = document.getElementById("dayCard");
+  card.innerHTML = "";
 
-  for (let i=0;i<7;i++) {
-    const day = new Date(monday);
-    day.setDate(monday.getDate()+i);
-    const key = iso(day);
+  HABITS.forEach(h => {
+    const row = document.createElement("div");
+    row.className = "habit";
 
-    const data = JSON.parse(localStorage.getItem(key)) || {};
+    const label = document.createElement("span");
+    label.textContent = h;
 
-    const tr = document.createElement("tr");
-    tr.innerHTML = `<td>${de(day)}</td>`;
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.checked = data[h] === true;
 
-    HABITS.forEach(h => {
-      const td = document.createElement("td");
-
-      if (h === "care") return;
-
-      const cb = document.createElement("input");
-      cb.type = "checkbox";
-      cb.checked = data[h] === true;
-
-      cb.onchange = () => {
-        data[h] = cb.checked;
-        localStorage.setItem(key, JSON.stringify(data));
-        render();
-      };
-
-      td.appendChild(cb);
-      tr.appendChild(td);
-    });
-
-    const careTd = document.createElement("td");
-    const careInput = document.createElement("input");
-    careInput.type = "text";
-    careInput.value = data.care || "";
-    careInput.onchange = () => {
-      data.care = careInput.value;
+    cb.onchange = () => {
+      data[h] = cb.checked;
       localStorage.setItem(key, JSON.stringify(data));
     };
-    careTd.appendChild(careInput);
-    tr.appendChild(careTd);
 
-    tbody.appendChild(tr);
+    row.appendChild(label);
+    row.appendChild(cb);
+    card.appendChild(row);
+  });
 
-    // Streak zählen
-    const score = HABITS.filter(h=>data[h]).length;
-    if (score >= 5) streakCount++;
-  }
-
-  streak.textContent = streakCount > 0
-    ? `🔥 ${streakCount} aktive Tage diese Woche`
-    : "Serie starten 👍";
-
-  focusText.value = localStorage.getItem("focusText") || "";
-  focusText.onchange = () =>
-    localStorage.setItem("focusText", focusText.value);
+  noteInput.value = data.note || "";
+  noteInput.onchange = () => {
+    data.note = noteInput.value;
+    localStorage.setItem(key, JSON.stringify(data));
+  };
 }
 
-// ---------------- NAV ----------------
-function nextWeek(){ weekOffset+=7; render(); }
-function prevWeek(){ weekOffset-=7; render(); }
+/* =====================
+   NAV
+   ===================== */
+function nextDay(){ currentDate.setDate(currentDate.getDate()+1); renderDay(); }
+function prevDay(){ currentDate.setDate(currentDate.getDate()-1); renderDay(); }
 
-// ---------------- QUOTES ----------------
-const quotes = [
-  "Nicht perfekt – aber konsequent.",
-  "Heute zählt.",
-  "Kleine Schritte, große Wirkung.",
-  "Du ziehst das durch.",
-  "Stark ist, wer dranbleibt."
-];
-quote.textContent = quotes[new Date().getDate() % quotes.length];
+/* =====================
+   DARK MODE
+   ===================== */
+if(localStorage.getItem("theme")==="dark") document.body.classList.add("dark");
 
-// ---------------- INIT ----------------
-render();
+darkToggle.onclick = () => {
+  document.body.classList.toggle("dark");
+  localStorage.setItem("theme",
+    document.body.classList.contains("dark") ? "dark" : "light");
+};
 
+/* =====================
+   INIT
+   ===================== */
+renderDay();
+/* =====================
+   SWIPE NAVIGATION
+   ===================== */
+let touchStartX = 0;
+let touchEndX = 0;
 
+const swipeThreshold = 60; // px – fühlt sich gut auf iPhone SE an
 
-// -------- Dark Mode Toggle (iOS-sicher) --------
-document.addEventListener("DOMContentLoaded", () => {
-  const toggle = document.getElementById("darkToggle");
-
-  if (!toggle) {
-    alert("DarkToggle Button nicht gefunden");
-    return;
-  }
-
-  // gespeicherten Zustand laden
-  if (localStorage.getItem("theme") === "dark") {
-    document.body.classList.add("dark");
-  }
-
-  toggle.addEventListener("click", () => {
-    document.body.classList.toggle("dark");
-    localStorage.setItem(
-      "theme",
-      document.body.classList.contains("dark") ? "dark" : "light"
-    );
-  });
+document.addEventListener("touchstart", e => {
+  touchStartX = e.changedTouches[0].screenX;
 });
+
+document.addEventListener("touchend", e => {
+  touchEndX = e.changedTouches[0].screenX;
+  handleSwipe();
+});
+
+function handleSwipe() {
+  const diff = touchEndX - touchStartX;
+
+  if (Math.abs(diff) < swipeThreshold) return;
+
+  if (diff > 0) {
+    prevDay();   // 👉 Swipe RIGHT
+  } else {
+    nextDay();   // 👉 Swipe LEFT
+  }
+}
 </script>
 
 </body>
