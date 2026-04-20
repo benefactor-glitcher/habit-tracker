@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Habit Tracker Dashboard – stabil</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background:#f2f4f8;
+  padding:20px;
+}
+h1,h2 { margin: 6px 0; }
+small { color:#555; }
+
+table {
+  width:100%;
+  border-collapse:collapse;
+  background:white;
+}
+th,td {
+  border:1px solid #ddd;
+  padding:6px;
+  text-align:center;
+}
+th {
+  background:#eef1f6;
+}
+input[type="text"] {
+  width:100%;
+}
+.box {
+  background:white;
+  padding:10px;
+  margin-bottom:12px;
+}
+.quote {
+  font-style:italic;
+  font-size:1.1em;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🔥 My Way 2 the Top 💪🏽</h1>
+<small>Stabil · Lokal · Nachvollziehbar</small>
+
+<div class="box">
+  <h2>💡 Tagesimpuls</h2>
+  <p class="quote" id="quote"></p>
+</div>
+
+<div class="box">
+  <button onclick="prevWeek()">← Woche</button>
+  <button onclick="nextWeek()">Woche →</button>
+  <strong id="weekLabel"></strong>
+</div>
+
+<div class="box">
+<table>
+<thead>
+<tr>
+  <th>Datum</th>
+  <th>Schlaf (22-5)</th>
+  <th>Yoga</th>
+  <th>3x Fitnessringe</th>
+  <th>10k Steps</th>
+  <th>Protein mind. 200g</th>
+  <th>Wasser mind. 2L</th>
+  <th>No P*rn</th>
+  <th>Teeth a.m.</th>
+  <th>Teeth p.m.</th>
+  <th>Fokus</th>
+  <th>Selfcare</th>
+</tr>
+</thead>
+<tbody id="tableBody"></tbody>
+</table>
+</div>
+
+<div class="box">
+  <h2>🎯 Fokus‑Habit der Woche</h2>
+  <input id="focusText" placeholder="z. B. kein Handy ab 21:00">
+</div>
+
+<div class="box">
+  <h2>🔥 Streak</h2>
+  <p id="streak"></p>
+</div>
+
+<script>
+// ---------------- BASIC SETUP ----------------
+const HABITS = [
+  "sleep","morning","strength","steps",
+  "protein","water","noporn","teethAM","teethPM","focus"
+];
+
+let weekOffset = 0;
+
+// ---------------- DATE HELPERS ----------------
+function mondayOf(date) {
+  const d = new Date(date);
+  const day = d.getDay() || 7;
+  d.setDate(d.getDate() - day + 1);
+  return d;
+}
+function iso(d) {
+  return d.toISOString().slice(0,10);
+}
+function de(d) {
+  return d.toLocaleDateString("de-DE");
+}
+
+// ---------------- RENDER ----------------
+function render() {
+  const base = new Date();
+  base.setDate(base.getDate() + weekOffset);
+  const monday = mondayOf(base);
+
+  weekLabel.textContent = "KW ab " + de(monday);
+
+  const tbody = document.getElementById("tableBody");
+  tbody.innerHTML = "";
+
+  let streakCount = 0;
+
+  for (let i=0;i<7;i++) {
+    const day = new Date(monday);
+    day.setDate(monday.getDate()+i);
+    const key = iso(day);
+
+    const data = JSON.parse(localStorage.getItem(key)) || {};
+
+    const tr = document.createElement("tr");
+    tr.innerHTML = `<td>${de(day)}</td>`;
+
+    HABITS.forEach(h => {
+      const td = document.createElement("td");
+
+      if (h === "care") return;
+
+      const cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = data[h] === true;
+
+      cb.onchange = () => {
+        data[h] = cb.checked;
+        localStorage.setItem(key, JSON.stringify(data));
+        render();
+      };
+
+      td.appendChild(cb);
+      tr.appendChild(td);
+    });
+
+    const careTd = document.createElement("td");
+    const careInput = document.createElement("input");
+    careInput.type = "text";
+    careInput.value = data.care || "";
+    careInput.onchange = () => {
+      data.care = careInput.value;
+      localStorage.setItem(key, JSON.stringify(data));
+    };
+    careTd.appendChild(careInput);
+    tr.appendChild(careTd);
+
+    tbody.appendChild(tr);
+
+    // Streak zählen
+    const score = HABITS.filter(h=>data[h]).length;
+    if (score >= 5) streakCount++;
+  }
+
+  streak.textContent = streakCount > 0
+    ? `🔥 ${streakCount} aktive Tage diese Woche`
+    : "Serie starten 👍";
+
+  focusText.value = localStorage.getItem("focusText") || "";
+  focusText.onchange = () =>
+    localStorage.setItem("focusText", focusText.value);
+}
+
+// ---------------- NAV ----------------
+function nextWeek(){ weekOffset+=7; render(); }
+function prevWeek(){ weekOffset-=7; render(); }
+
+// ---------------- QUOTES ----------------
+const quotes = [
+  "Nicht perfekt – aber konsequent.",
+  "Heute zählt.",
+  "Kleine Schritte, große Wirkung.",
+  "Du ziehst das durch.",
+  "Stark ist, wer dranbleibt."
+];
+quote.textContent = quotes[new Date().getDate() % quotes.length];
+
+// ---------------- INIT ----------------
+render();
+</script>
+
+</body>
+</html>
