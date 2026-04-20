@@ -5,38 +5,100 @@
 <title>Habit Tracker Dashboard – stabil</title>
 
 <style>
-body {
-  font-family: Arial, sans-serif;
-  background:#f2f4f8;
-  padding:20px;
+/* -------- Basis -------- */
+:root {
+  --bg: #f2f4f8;
+  --fg: #111;
+  --box: #ffffff;
+  --border: #ddd;
+  --accent: #3b82f6;
+  --muted: #666;
+  font-size: 14px; /* Basis für iPhone SE */
 }
-h1,h2 { margin: 6px 0; }
-small { color:#555; }
 
-table {
-  width:100%;
-  border-collapse:collapse;
-  background:white;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  background: var(--bg);
+  color: var(--fg);
+  padding: 12px;
+  margin: 0;
 }
-th,td {
-  border:1px solid #ddd;
-  padding:6px;
-  text-align:center;
+
+/* -------- Dark Mode -------- */
+body.dark {
+  --bg: #0f172a;
+  --fg: #e5e7eb;
+  --box: #1e293b;
+  --border: #334155;
+  --muted: #9ca3af;
 }
-th {
-  background:#eef1f6;
+
+/* -------- Typo -------- */
+h1 {
+  font-size: 1.4rem;
+  margin: 4px 0;
 }
-input[type="text"] {
-  width:100%;
+h2 {
+  font-size: 1.1rem;
+  margin: 6px 0;
 }
+small {
+  color: var(--muted);
+  font-size: 0.8rem;
+}
+
+/* -------- Boxen -------- */
 .box {
-  background:white;
-  padding:10px;
-  margin-bottom:12px;
+  background: var(--box);
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 10px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.05);
 }
-.quote {
-  font-style:italic;
-  font-size:1.1em;
+
+/* -------- Tabelle -------- */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.75rem; /* sehr wichtig fürs SE */
+}
+
+th, td {
+  border: 1px solid var(--border);
+  padding: 4px;
+  text-align: center;
+}
+
+th {
+  background: rgba(0,0,0,0.04);
+}
+
+/* -------- Große Checkboxen -------- */
+input[type="checkbox"] {
+  width: 20px;
+  height: 20px;
+  accent-color: var(--accent);
+}
+
+/* -------- Texteingaben -------- */
+input[type="text"] {
+  width: 100%;
+  font-size: 0.75rem;
+  padding: 4px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--box);
+  color: var(--fg);
+}
+
+/* -------- Buttons -------- */
+button {
+  font-size: 0.8rem;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: none;
+  background: var(--accent);
+  color: white;
 }
 </style>
 </head>
@@ -45,6 +107,8 @@ input[type="text"] {
 
 <h1>🔥 My Way 2 the Top 💪🏽</h1>
 <small>Stabil · Lokal · Nachvollziehbar</small>
+
+<button id="darkToggle">🌙 Dark Mode</button>
 
 <div class="box">
   <h2>💡 Tagesimpuls</h2>
@@ -197,6 +261,22 @@ quote.textContent = quotes[new Date().getDate() % quotes.length];
 
 // ---------------- INIT ----------------
 render();
+
+
+// -------- Dark Mode Toggle --------
+const toggle = document.getElementById("darkToggle");
+
+if (localStorage.getItem("theme") === "dark") {
+  document.body.classList.add("dark");
+}
+
+toggle.onclick = () => {
+  document.body.classList.toggle("dark");
+  localStorage.setItem(
+    "theme",
+    document.body.classList.contains("dark") ? "dark" : "light"
+  );
+};
 </script>
 
 </body>
