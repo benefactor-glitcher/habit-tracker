@@ -26,11 +26,12 @@ body {
 
 /* -------- Dark Mode -------- */
 body.dark {
-  --bg: #0f172a;
-  --fg: #e5e7eb;
-  --box: #1e293b;
-  --border: #334155;
-  --muted: #9ca3af;
+  background: #0f172a;
+  color: #e5e7eb;
+}
+
+body.dark .box {
+  background: #1e293b;
 }
 
 /* -------- Typo -------- */
@@ -263,20 +264,29 @@ quote.textContent = quotes[new Date().getDate() % quotes.length];
 render();
 
 
-// -------- Dark Mode Toggle --------
-const toggle = document.getElementById("darkToggle");
 
-if (localStorage.getItem("theme") === "dark") {
-  document.body.classList.add("dark");
-}
+// -------- Dark Mode Toggle (iOS-sicher) --------
+document.addEventListener("DOMContentLoaded", () => {
+  const toggle = document.getElementById("darkToggle");
 
-toggle.onclick = () => {
-  document.body.classList.toggle("dark");
-  localStorage.setItem(
-    "theme",
-    document.body.classList.contains("dark") ? "dark" : "light"
-  );
-};
+  if (!toggle) {
+    alert("DarkToggle Button nicht gefunden");
+    return;
+  }
+
+  // gespeicherten Zustand laden
+  if (localStorage.getItem("theme") === "dark") {
+    document.body.classList.add("dark");
+  }
+
+  toggle.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    localStorage.setItem(
+      "theme",
+      document.body.classList.contains("dark") ? "dark" : "light"
+    );
+  });
+});
 </script>
 
 </body>
