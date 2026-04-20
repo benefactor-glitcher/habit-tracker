@@ -3,13 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>My Way</title>
 
 <style>
-/* =====================
-   THEME
-   ===================== */
 :root {
   --bg: #f2f4f8;
   --fg: #111;
@@ -20,17 +16,6 @@
   font-size: 15px;
 }
 
-body.dark {
-  --bg: #0f172a;
-  --fg: #e5e7eb;
-  --box: #1e293b;
-  --border: #334155;
-  --muted: #9ca3af;
-}
-
-/* =====================
-   BASE
-   ===================== */
 body {
   margin: 0;
   padding: 12px;
@@ -39,9 +24,7 @@ body {
   color: var(--fg);
 }
 
-/* =====================
-   STICKY HEADER
-   ===================== */
+/* Header */
 header {
   position: sticky;
   top: 0;
@@ -68,9 +51,7 @@ small {
   color: var(--muted);
 }
 
-/* =====================
-   BUTTONS
-   ===================== */
+/* Buttons */
 button {
   border: none;
   background: var(--accent);
@@ -85,9 +66,7 @@ button {
   font-size: 1rem;
 }
 
-/* =====================
-   DAY CARD
-   ===================== */
+/* Day Card */
 .day-card {
   background: var(--box);
   border: 1px solid var(--border);
@@ -96,9 +75,7 @@ button {
   margin-top: 12px;
 }
 
-/* =====================
-   HABITS
-   ===================== */
+/* Habits */
 .habit {
   display: flex;
   justify-content: space-between;
@@ -118,9 +95,7 @@ input[type="checkbox"] {
   accent-color: var(--accent);
 }
 
-/* =====================
-   NOTES
-   ===================== */
+/* Notes */
 input[type="text"] {
   width: 100%;
   margin-top: 8px;
@@ -132,42 +107,39 @@ input[type="text"] {
   color: var(--fg);
 }
 /* =====================
-   SLIDE ANIMATION
+   SYSTEM DARK MODE
    ===================== */
-.slide-out-left {
-  animation: slideOutLeft 0.18s ease-in forwards;
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0f172a;
+    --fg: #e5e7eb;
+    --box: #1e293b;
+    --border: #334155;
+    --muted: #9ca3af;
+  }
 }
 
-.slide-out-right {
-  animation: slideOutRight 0.18s ease-in forwards;
-}
-
-.slide-in-left {
-  animation: slideInLeft 0.18s ease-out forwards;
-}
-
-.slide-in-right {
-  animation: slideInRight 0.18s ease-out forwards;
-}
+/* Slide Animation */
+.slide-out-left { animation: slideOutLeft 0.18s ease-in forwards; }
+.slide-out-right { animation: slideOutRight 0.18s ease-in forwards; }
+.slide-in-left { animation: slideInLeft 0.18s ease-out forwards; }
+.slide-in-right { animation: slideInRight 0.18s ease-out forwards; }
 
 @keyframes slideOutLeft {
   from { transform: translateX(0); opacity: 1; }
-  to   { transform: translateX(-40px); opacity: 0; }
+  to { transform: translateX(-40px); opacity: 0; }
 }
-
 @keyframes slideOutRight {
   from { transform: translateX(0); opacity: 1; }
-  to   { transform: translateX(40px); opacity: 0; }
+  to { transform: translateX(40px); opacity: 0; }
 }
-
 @keyframes slideInLeft {
   from { transform: translateX(40px); opacity: 0; }
-  to   { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(0); opacity: 1; }
 }
-
 @keyframes slideInRight {
   from { transform: translateX(-40px); opacity: 0; }
-  to   { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(0); opacity: 1; }
 }
 </style>
 </head>
@@ -180,26 +152,17 @@ input[type="text"] {
 
     <div class="header-center">
       <strong id="dateLabel"></strong>
-      <small id="weekLabel"></small>
     </div>
 
     <button class="icon-btn" onclick="nextDay()">→</button>
   </div>
-
-  <div class="header-row" style="margin-top:6px">
-    <small>🔥 My Way 2 the Top</small>
-    <button id="darkToggle" class="icon-btn">🌙</button>
-  </div>
 </header>
 
 <section class="day-card" id="dayCard"></section>
-
-<input id="noteInput" placeholder="Notiz / Selfcare / Gedanken…">
+<input id="noteInput" placeholder="Gedanke des Tages…">
 
 <script>
-/* =====================
-   STATE
-   ===================== */
+/* STATE */
 const HABITS = [
   "Schlafhygiene eingehalten (22:00–05:00)",
   "Morgensport / Yoga",
@@ -213,29 +176,28 @@ const HABITS = [
 
 let currentDate = new Date();
 
-/* =====================
-   DATE HELPERS
-   ===================== */
+/* DATE HELPERS */
 function iso(d){ return d.toISOString().slice(0,10); }
 
 function weekNumber(d){
   d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay()||7));
+  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
   const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
   return Math.ceil((((d - yearStart) / 86400000) + 1)/7);
 }
 
-/* =====================
-   RENDER
-   ===================== */
+/* RENDER */
 function renderDay() {
   const key = iso(currentDate);
   const data = JSON.parse(localStorage.getItem(key)) || {};
 
   dateLabel.textContent =
-    currentDate.toLocaleDateString("de-DE", { weekday:"long", day:"2-digit", month:"2-digit", year:"numeric" });
-
-  weekLabel.textContent = "Kalenderwoche " + weekNumber(currentDate);
+    currentDate.toLocaleDateString("de-DE", {
+      weekday:"long",
+      day:"2-digit",
+      month:"2-digit",
+      year:"numeric"
+    }) + " (KW " + weekNumber(currentDate) + ")";
 
   const card = document.getElementById("dayCard");
   card.innerHTML = "";
@@ -268,90 +230,49 @@ function renderDay() {
   };
 }
 
-/* =====================
-   NAV
-   ===================== */
+/* NAV */
 function nextDay() {
-  animateDay("left", () => {
-    currentDate.setDate(currentDate.getDate() + 1);
-  });
+  animateDay("left", () => currentDate.setDate(currentDate.getDate() + 1));
 }
-
 function prevDay() {
-  animateDay("right", () => {
-    currentDate.setDate(currentDate.getDate() - 1);
-  });
+  animateDay("right", () => currentDate.setDate(currentDate.getDate() - 1));
 }
 
 function animateDay(direction, changeDate) {
   const card = document.getElementById("dayCard");
 
-  // raus animieren
-  card.classList.add(
-    direction === "left" ? "slide-out-left" : "slide-out-right"
-  );
+  card.classList.add(direction === "left" ? "slide-out-left" : "slide-out-right");
 
   setTimeout(() => {
-    changeDate();        // Datum ändern
-    renderDay();         // Neu rendern
+    changeDate();
+    renderDay();
 
-    // rein animieren
     card.classList.remove("slide-out-left", "slide-out-right");
-    card.classList.add(
-      direction === "left" ? "slide-in-right" : "slide-in-left"
-    );
+    card.classList.add(direction === "left" ? "slide-in-right" : "slide-in-left");
 
-    // Cleanup
     setTimeout(() => {
       card.classList.remove("slide-in-left", "slide-in-right");
     }, 180);
-
   }, 180);
 }
-``
-/* =====================
-   DARK MODE
-   ===================== */
-if(localStorage.getItem("theme")==="dark") document.body.classList.add("dark");
 
-darkToggle.onclick = () => {
-  document.body.classList.toggle("dark");
-  localStorage.setItem("theme",
-    document.body.classList.contains("dark") ? "dark" : "light");
-};
-
-/* =====================
-   INIT
-   ===================== */
+/* INIT */
 renderDay();
-/* =====================
-   SWIPE NAVIGATION
-   ===================== */
+
+/* SWIPE */
 let touchStartX = 0;
 let touchEndX = 0;
-
-const swipeThreshold = 60; // px – fühlt sich gut auf iPhone SE an
+const swipeThreshold = 60;
 
 document.addEventListener("touchstart", e => {
   touchStartX = e.changedTouches[0].screenX;
 });
-
 document.addEventListener("touchend", e => {
   touchEndX = e.changedTouches[0].screenX;
-  handleSwipe();
-});
-
-function handleSwipe() {
   const diff = touchEndX - touchStartX;
-
   if (Math.abs(diff) < swipeThreshold) return;
-
-  if (diff > 0) {
-    prevDay();   // 👉 Swipe RIGHT
-  } else {
-    nextDay();   // 👉 Swipe LEFT
-  }
-}
+  diff > 0 ? prevDay() : nextDay();
+});
 </script>
 
 </body>
