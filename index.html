@@ -211,10 +211,10 @@ function renderDay() {
 
   dateLabel.textContent =
     currentDate.toLocaleDateString("de-DE", {
-      weekday:"long",
-      day:"2-digit",
-      month:"2-digit",
-      year:"numeric"
+      weekday: "long",
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric"
     }) + " (KW " + weekNumber(currentDate) + ")";
 
   const card = document.getElementById("dayCard");
@@ -241,17 +241,9 @@ function renderDay() {
     card.appendChild(row);
   });
 
+  // ✅ Notiz
   noteInput.value = data.note || "";
   noteInput.onchange = () => {
-// Heute-Button anzeigen/verstecken
-  const todayBtn = document.getElementById("todayBtn");
-  const today = new Date();
-
-  const isToday =
-    currentDate.toDateString() === today.toDateString();
-if (todayBtn) {
-  todayBtn.style.display = isToday ? "none" : "inline-block";
-}
     data.note = noteInput.value;
     localStorage.setItem(key, JSON.stringify(data));
   };
