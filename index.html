@@ -247,6 +247,16 @@ function renderDay() {
     data.note = noteInput.value;
     localStorage.setItem(key, JSON.stringify(data));
   };
+// ✅ Heute-Button anzeigen / verstecken
+  const todayBtn = document.getElementById("todayBtn");
+  const today = new Date();
+
+  const isToday =
+    currentDate.toDateString() === today.toDateString();
+
+  if (todayBtn) {
+    todayBtn.style.display = isToday ? "none" : "inline-block";
+  }
 }
 
 /* NAV */
