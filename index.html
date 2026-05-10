@@ -95,40 +95,41 @@ input[type="checkbox"] {
   accent-color: var(--accent);
 }
 
-/* Task des Tages - Giftgrün Highlight */
+/* Fokus des Tages - Giftgrün Highlight */
 .task-container {
-  background: rgba(163, 230, 53, 0.15); /* Dezentes Giftgrün als Fläche */
-  padding: 10px;
-  border-radius: 10px;
-  margin-bottom: 10px;
-  border-left: 4px solid #84cc16; /* Kräftiges Giftgrün als Fokus-Linie */
+  background: rgba(132, 204, 22, 0.2) !important; /* Giftgrüner Hintergrund */
+  padding: 12px !important;
+  border-radius: 12px !important;
+  margin-bottom: 15px !important;
+  border-left: 5px solid #84cc16 !important; /* Kräftige giftgrüne Linie */
+  display: block !important;
 }
 
 .task-header {
-  margin-bottom: 4px;
-  font-weight: 800;
-  font-size: 0.7rem;
-  color: #65a30d; /* Dunkleres Grün für bessere Lesbarkeit der Schrift */
-  text-transform: uppercase;
-  letter-spacing: 0.03em;
+  margin-bottom: 4px !important;
+  font-weight: 800 !important;
+  font-size: 0.75rem !important;
+  color: #4d7c0f !important; /* Dunkelgrün für Lesbarkeit */
+  text-transform: uppercase !important;
+  letter-spacing: 0.05em !important;
 }
 
 #taskInput {
-  width: 100%;
-  padding: 4px 0;
-  font-size: 1.05rem;
-  font-weight: 600; /* Etwas dicker für mehr Präsenz */
-  border: none;
-  background: transparent;
-  color: var(--fg);
-  box-sizing: border-box;
-  outline: none;
+  width: 100% !important;
+  padding: 5px 0 !important;
+  font-size: 1.1rem !important;
+  font-weight: 700 !important;
+  border: none !important;
+  background: transparent !important;
+  color: #111 !important; /* Im Hellen dunkel für Kontrast */
+  outline: none !important;
 }
 
-#taskInput::placeholder {
-  color: rgba(101, 163, 13, 0.6); /* Platzhalter in passendem Grün-Ton */
-  font-weight: 400;
-  font-style: italic;
+/* Anpassung für Dark Mode */
+@media (prefers-color-scheme: dark) {
+  #taskInput {
+    color: #f2f4f8 !important;
+  }
 }/* =====================
    SYSTEM DARK MODE
    ===================== */
@@ -246,27 +247,27 @@ function renderDay() {
   const card = document.getElementById("dayCard");
   card.innerHTML = "";
 
-  // --- Task des Tages Bereich (Kompakt-Version) ---
-  const taskContainer = document.createElement("div");
-  taskContainer.className = "task-container";
+// --- Task/Fokus Bereich ---
+  const taskBox = document.createElement("div");
+  taskBox.className = "task-container";
 
-  const taskHeader = document.createElement("div");
-  taskHeader.className = "task-header";
-  taskHeader.textContent = "Fokus des Tages"; // Etwas stärkerer Begriff
-  taskContainer.appendChild(taskHeader);
+  const tHeader = document.createElement("div");
+  tHeader.className = "task-header";
+  tHeader.textContent = "Fokus des Tages";
+  taskBox.appendChild(tHeader);
 
-  const tInp = document.createElement("input");
-  tInp.id = "taskInput";
-  tInp.placeholder = "Was muss heute passieren?";
-  tInp.value = data.task || data.note || ""; 
-  tInp.onchange = () => {
-    data.task = tInp.value;
+  const tInput = document.createElement("input");
+  tInput.id = "taskInput";
+  tInput.placeholder = "Was ist heute wichtig?";
+  tInput.value = data.task || data.note || ""; 
+  tInput.onchange = () => {
+    data.task = tInput.value;
     localStorage.setItem(key, JSON.stringify(data));
   };
   
-  taskContainer.appendChild(tInp);
-  card.appendChild(taskContainer);
-  // -----------------------------------
+  taskBox.appendChild(tInput);
+  card.appendChild(taskBox);
+  // -------------------------
 
   // Habits rendern
   HABITS.forEach(h => {
