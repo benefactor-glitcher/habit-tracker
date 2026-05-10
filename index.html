@@ -95,27 +95,40 @@ input[type="checkbox"] {
   accent-color: var(--accent);
 }
 
-/* Task des Tages */
+/* Task des Tages - Kompakt & Fokusiert */
+.task-container {
+  background: rgba(37, 99, 235, 0.08); /* Dezenter Akzent-Hintergrund */
+  padding: 10px;
+  border-radius: 10px;
+  margin-bottom: 10px;
+  border-left: 4px solid var(--accent); /* Fokus-Linie links */
+}
+
 .task-header {
-  margin-top: 5px;
-  margin-bottom: 6px;
-  font-weight: bold;
-  font-size: 0.75rem;
-  color: var(--muted);
+  margin-bottom: 4px;
+  font-weight: 800;
+  font-size: 0.7rem; /* Kleiner, aber fett */
+  color: var(--accent);
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0.03em;
 }
 
 #taskInput {
   width: 100%;
-  margin-bottom: 15px;
-  padding: 10px;
-  font-size: 1rem;
-  border-radius: 10px;
-  border: 1px solid var(--accent);
-  background: var(--box);
+  padding: 4px 0; /* Weniger vertikaler Platz */
+  font-size: 1.05rem; /* Größere Schrift für den Fokus */
+  font-weight: 500;
+  border: none;
+  background: transparent;
   color: var(--fg);
-  box-sizing: border-box; /* Verhindert, dass das Feld rechts übersteht */
+  box-sizing: border-box;
+  outline: none; /* Verhindert hässliche Ränder beim Tippen */
+}
+
+#taskInput::placeholder {
+  color: var(--muted);
+  font-weight: 400;
+  font-style: italic;
 }/* =====================
    SYSTEM DARK MODE
    ===================== */
@@ -233,21 +246,27 @@ function renderDay() {
   const card = document.getElementById("dayCard");
   card.innerHTML = "";
 
-  // NEU: Task des Tages Header & Input
+  // --- Task des Tages Bereich (Kompakt-Version) ---
+  const taskContainer = document.createElement("div");
+  taskContainer.className = "task-container";
+
   const taskHeader = document.createElement("div");
   taskHeader.className = "task-header";
-  taskHeader.textContent = "Task des Tages";
-  card.appendChild(taskHeader);
+  taskHeader.textContent = "Fokus des Tages"; // Etwas stärkerer Begriff
+  taskContainer.appendChild(taskHeader);
 
   const tInp = document.createElement("input");
   tInp.id = "taskInput";
-  tInp.placeholder = "Was ist heute wichtig?";
+  tInp.placeholder = "Was muss heute passieren?";
   tInp.value = data.task || data.note || ""; 
   tInp.onchange = () => {
     data.task = tInp.value;
     localStorage.setItem(key, JSON.stringify(data));
   };
-  card.appendChild(tInp);
+  
+  taskContainer.appendChild(tInp);
+  card.appendChild(taskContainer);
+  // -----------------------------------
 
   // Habits rendern
   HABITS.forEach(h => {
