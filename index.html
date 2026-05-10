@@ -210,8 +210,43 @@ input[type="checkbox"] {
   .task-container { background-color: #adff2f !important; }
   #taskInput { color: #000 !important; }
   .task-header { color: #3e6300 !important; }
+/* Menüleiste unten */
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: var(--box);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 100;
 }
 
+.tab-item {
+  flex: 1;
+  text-align: center;
+  font-size: 0.7rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.tab-item.active {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+/* Container für verschiedene Ansichten */
+.view {
+  display: none; /* Standardmäßig alles verstecken */
+  padding-bottom: 80px; /* Platz für die Menüleiste */
+}
+
+.view.active {
+  display: block; /* Nur die aktive Ansicht zeigen */
+}
 </style>
 </head>
 
