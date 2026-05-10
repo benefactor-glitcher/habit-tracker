@@ -95,38 +95,38 @@ input[type="checkbox"] {
   accent-color: var(--accent);
 }
 
-/* Task des Tages - Kompakt & Fokusiert */
+/* Task des Tages - Giftgrün Highlight */
 .task-container {
-  background: rgba(37, 99, 235, 0.08); /* Dezenter Akzent-Hintergrund */
+  background: rgba(163, 230, 53, 0.15); /* Dezentes Giftgrün als Fläche */
   padding: 10px;
   border-radius: 10px;
   margin-bottom: 10px;
-  border-left: 4px solid var(--accent); /* Fokus-Linie links */
+  border-left: 4px solid #84cc16; /* Kräftiges Giftgrün als Fokus-Linie */
 }
 
 .task-header {
   margin-bottom: 4px;
   font-weight: 800;
-  font-size: 0.7rem; /* Kleiner, aber fett */
-  color: var(--accent);
+  font-size: 0.7rem;
+  color: #65a30d; /* Dunkleres Grün für bessere Lesbarkeit der Schrift */
   text-transform: uppercase;
   letter-spacing: 0.03em;
 }
 
 #taskInput {
   width: 100%;
-  padding: 4px 0; /* Weniger vertikaler Platz */
-  font-size: 1.05rem; /* Größere Schrift für den Fokus */
-  font-weight: 500;
+  padding: 4px 0;
+  font-size: 1.05rem;
+  font-weight: 600; /* Etwas dicker für mehr Präsenz */
   border: none;
   background: transparent;
   color: var(--fg);
   box-sizing: border-box;
-  outline: none; /* Verhindert hässliche Ränder beim Tippen */
+  outline: none;
 }
 
 #taskInput::placeholder {
-  color: var(--muted);
+  color: rgba(101, 163, 13, 0.6); /* Platzhalter in passendem Grün-Ton */
   font-weight: 400;
   font-style: italic;
 }/* =====================
