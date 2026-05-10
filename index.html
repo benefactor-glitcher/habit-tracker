@@ -95,18 +95,28 @@ input[type="checkbox"] {
   accent-color: var(--accent);
 }
 
-/* Notes */
-input[type="text"] {
+/* Task des Tages */
+.task-header {
+  margin-top: 5px;
+  margin-bottom: 6px;
+  font-weight: bold;
+  font-size: 0.75rem;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+#taskInput {
   width: 100%;
-  margin-top: 8px;
-  padding: 8px;
-  font-size: 0.9rem;
-  border-radius: 8px;
-  border: 1px solid var(--border);
+  margin-bottom: 15px;
+  padding: 10px;
+  font-size: 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--accent);
   background: var(--box);
   color: var(--fg);
-}
-/* =====================
+  box-sizing: border-box; /* Verhindert, dass das Feld rechts übersteht */
+}/* =====================
    SYSTEM DARK MODE
    ===================== */
 @media (prefers-color-scheme: dark) {
@@ -177,7 +187,7 @@ input[type="text"] {
 </header>
 
 <section class="day-card" id="dayCard"></section>
-<input id="noteInput" placeholder="Gedanke des Tages…">
+
 
 <script>
 /* STATE */
@@ -189,7 +199,8 @@ const HABITS = [
   "Protein mind. 200g",
   "Pures Wasser mind. 2L",
   "No P*rn",
-  "Zähne putzen Morgens & Abends"
+ "Zähne putzen (Morgens)",
+  "Zähne putzen (Abends)"
 ];
 
 let currentDate = new Date();
@@ -209,6 +220,8 @@ function renderDay() {
   const key = iso(currentDate);
   const data = JSON.parse(localStorage.getItem(key)) || {};
 
+  // Datum setzen
+  const dateLabel = document.getElementById("dateLabel");
   dateLabel.textContent =
     currentDate.toLocaleDateString("de-DE", {
       weekday: "long",
@@ -220,6 +233,23 @@ function renderDay() {
   const card = document.getElementById("dayCard");
   card.innerHTML = "";
 
+  // NEU: Task des Tages Header & Input
+  const taskHeader = document.createElement("div");
+  taskHeader.className = "task-header";
+  taskHeader.textContent = "Task des Tages";
+  card.appendChild(taskHeader);
+
+  const tInp = document.createElement("input");
+  tInp.id = "taskInput";
+  tInp.placeholder = "Was ist heute wichtig?";
+  tInp.value = data.task || data.note || ""; 
+  tInp.onchange = () => {
+    data.task = tInp.value;
+    localStorage.setItem(key, JSON.stringify(data));
+  };
+  card.appendChild(tInp);
+
+  // Habits rendern
   HABITS.forEach(h => {
     const row = document.createElement("div");
     row.className = "habit";
@@ -241,19 +271,9 @@ function renderDay() {
     card.appendChild(row);
   });
 
-  // ✅ Notiz
-  noteInput.value = data.note || "";
-  noteInput.onchange = () => {
-    data.note = noteInput.value;
-    localStorage.setItem(key, JSON.stringify(data));
-  };
-// ✅ Heute-Button anzeigen / verstecken
+  // Heute-Button Logik
   const todayBtn = document.getElementById("todayBtn");
-  const today = new Date();
-
-  const isToday =
-    currentDate.toDateString() === today.toDateString();
-
+  const isToday = currentDate.toDateString() === new Date().toDateString();
   if (todayBtn) {
     todayBtn.style.display = isToday ? "none" : "inline-block";
   }
