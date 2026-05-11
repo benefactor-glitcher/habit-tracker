@@ -2,81 +2,52 @@
 <html lang="de">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>My Way</title>
-
 <style>
-:root {
-  --bg: #f2f4f8; --fg: #111; --box: #ffffff; --border: #d1d5db;
-  --accent: #2563eb; --muted: #6b7280; font-size: 15px;
-}
-@media (prefers-color-scheme: dark) {
-  :root { --bg: #0f172a; --fg: #e5e7eb; --box: #1e293b; --border: #334155; --muted: #9ca3af; }
-}
-
-body { margin: 0; padding: 12px; font-family: -apple-system, system-ui, Arial, sans-serif; background: var(--bg); color: var(--fg); overflow-x: hidden; }
-
+:root { --bg: #f2f4f8; --fg: #111; --box: #ffffff; --border: #d1d5db; --accent: #2563eb; --muted: #6b7280; font-size: 15px; }
+body { margin: 0; padding: 12px; font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif; background: var(--bg); color: var(--fg); }
 header { position: sticky; top: 0; background: var(--bg); padding-bottom: 4px; z-index: 50; }
 .header-row { display: flex; justify-content: space-between; align-items: center; }
 .header-center { text-align: center; }
 .header-center strong { display: block; }
-
 button { border: none; background: var(--accent); color: white; padding: 6px 10px; border-radius: 8px; font-size: 0.85rem; }
 .icon-btn { padding: 6px 8px; font-size: 1rem; }
-.today-btn { margin-top: 4px; padding: 4px 10px; font-size: 0.75rem; border-radius: 999px; background: rgba(37, 99, 235, 0.15); color: var(--accent); }
-
-.view { display: none; padding-bottom: 80px; }
-.view.active { display: block; }
-
 .day-card { background: var(--box); border: 1px solid var(--border); border-radius: 14px; padding: 12px; margin-top: 8px; }
-.habit { display: flex; justify-content: space-between; align-items: center; padding: 8px 6px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
-input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent); }
-
-.task-container { background-color: #adff2f !important; padding: 12px !important; border-radius: 12px !important; margin-bottom: 12px !important; border-left: 6px solid #76b900 !important; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+.habit { display: flex; justify-content: space-between; align-items: center; padding: 6px 6px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
+input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent); margin-left: 10px; }
+.task-container { background-color: #adff2f !important; padding: 8px 12px !important; border-radius: 10px !important; margin-bottom: 8px !important; border-left: 5px solid #76b900 !important; }
 .task-header { margin-bottom: 2px !important; font-weight: 900 !important; font-size: 0.7rem !important; color: #3e6300 !important; text-transform: uppercase; }
 #taskInput { width: 100% !important; border: none !important; background: transparent !important; color: #000 !important; font-size: 1.1rem !important; font-weight: 700 !important; outline: none !important; }
-
 .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 65px; background: var(--box); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 100; }
 .tab-item { flex: 1; text-align: center; font-size: 0.75rem; color: var(--muted); cursor: pointer; }
 .tab-item.active { color: var(--accent); font-weight: bold; }
-
-/* Statistik */
-.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-.stat-tile { background: var(--box); padding: 12px; border-radius: 12px; border: 1px solid var(--border); text-align: center; }
-.stat-val { display: block; font-size: 1.2rem; font-weight: 800; color: #84cc16; }
-.stat-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; }
+.view { display: none; padding-bottom: 80px; }
+.view.active { display: block; }
 .stats-card { background: var(--box); border: 1px solid var(--border); border-radius: 16px; padding: 15px; }
 .trend-row { display: flex; align-items: center; margin-bottom: 12px; }
 .trend-day { width: 45px; font-size: 0.8rem; font-weight: bold; }
 .trend-bar-bg { flex-grow: 1; height: 12px; background: var(--bg); border-radius: 6px; margin: 0 10px; overflow: hidden; }
 .trend-bar-fill { height: 100%; background: #adff2f; transition: width 0.5s ease; }
 .trend-percent { width: 35px; text-align: right; font-size: 0.75rem; color: var(--muted); }
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+.stat-tile { background: var(--box); padding: 12px; border-radius: 12px; border: 1px solid var(--border); text-align: center; }
+.stat-val { display: block; font-size: 1.2rem; font-weight: 800; color: #84cc16; }
+.stat-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; }
 .focus-history { margin-top: 20px; }
 .focus-item { font-size: 0.85rem; padding: 8px 0; border-bottom: 1px dashed var(--border); }
-.focus-item span { color: var(--muted); margin-right: 8px; font-weight: bold; }
-
-/* Animationen */
-.slide-out-left { animation: slideOutLeft 0.18s ease-in forwards; }
-.slide-out-right { animation: slideOutRight 0.18s ease-in forwards; }
-.slide-in-left { animation: slideInLeft 0.18s ease-out forwards; }
-.slide-in-right { animation: slideInRight 0.18s ease-out forwards; }
-@keyframes slideOutLeft { from { transform: translateX(0); opacity: 1; } to { transform: translateX(-40px); opacity: 0; } }
-@keyframes slideOutRight { from { transform: translateX(0); opacity: 1; } to { transform: translateX(40px); opacity: 0; } }
-@keyframes slideInLeft { from { transform: translateX(40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
-@keyframes slideInRight { from { transform: translateX(-40px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+.focus-item span { color: var(--muted); margin-right: 8px; }
+.today-btn { margin-top: 4px; padding: 4px 10px; font-size: 0.75rem; border-radius: 999px; background: rgba(37, 99, 235, 0.15); color: var(--accent); }
+@media (prefers-color-scheme: dark) { :root { --bg: #0f172a; --fg: #e5e7eb; --box: #1e293b; --border: #334155; --muted: #9ca3af; } }
 </style>
 </head>
-
 <body>
 
 <div id="view-tracker" class="view active">
   <header>
     <div class="header-row">
       <button class="icon-btn" onclick="prevDay()">←</button>
-      <div class="header-center">
-        <strong id="dateLabel"></strong>
-        <button id="todayBtn" class="today-btn" onclick="goToday()" style="display:none">Heute</button>
-      </div>
+      <div class="header-center"><strong id="dateLabel"></strong><button id="todayBtn" class="today-btn" onclick="goToday()" style="display:none">Heute</button></div>
       <button class="icon-btn" onclick="nextDay()">→</button>
     </div>
   </header>
@@ -85,8 +56,7 @@ input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent);
 
 <div id="view-stats" class="view">
   <div style="padding: 20px;">
-    <h2 style="margin-bottom: 5px;">7-Tage-Trend</h2>
-    <small style="color: var(--muted); display: block; margin-bottom: 20px;">Deine Performance der letzten Woche</small>
+    <h2>7-Tage-Trend</h2>
     <div id="statsContainer"></div>
   </div>
 </div>
@@ -97,12 +67,7 @@ input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent);
 </nav>
 
 <script>
-const HABITS = [
-  "Schlafhygiene (22:00–05:00)", "Morgensport / Yoga", "Alle 3x Aktivitätsringe",
-  "10k Alltagsschritte", "Protein mind. 200g", "Pures Wasser mind. 2L",
-  "No P*rn", "Zähne putzen (Morgens)", "Zähne putzen (Abends)"
-];
-
+const HABITS = ["Schlafhygiene (22:00–05:00)", "Morgensport / Yoga", "Alle 3x Aktivitätsringe", "10k Alltagsschritte", "Protein mind. 200g", "Pures Wasser mind. 2L", "No P*rn", "Zähne putzen (Morgens)", "Zähne putzen (Abends)"];
 let currentDate = new Date();
 const iso = (d) => d.toISOString().slice(0,10);
 
@@ -116,25 +81,21 @@ function weekNumber(d){
 function renderDay() {
   const key = iso(currentDate);
   const data = JSON.parse(localStorage.getItem(key)) || {};
-  
-  const dateLabel = document.getElementById("dateLabel");
-  dateLabel.textContent = currentDate.toLocaleDateString("de-DE", { weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" }) + " (KW " + weekNumber(currentDate) + ")";
-
+  document.getElementById("dateLabel").textContent = currentDate.toLocaleDateString("de-DE", { weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" }) + " (KW " + weekNumber(currentDate) + ")";
   const card = document.getElementById("dayCard");
   card.innerHTML = "";
 
-  // Fokus Box
+  // Fokus Bereich
   const taskBox = document.createElement("div");
   taskBox.className = "task-container";
   taskBox.innerHTML = `<div class="task-header">Fokus des Tages</div>`;
   const tInp = document.createElement("input");
   tInp.id = "taskInput"; tInp.value = data.task || data.note || "";
-  tInp.placeholder = "Was ist heute wichtig?";
   tInp.onchange = () => { data.task = tInp.value; localStorage.setItem(key, JSON.stringify(data)); };
   taskBox.appendChild(tInp);
   card.appendChild(taskBox);
 
-  // Habits
+  // Feste Habits
   HABITS.forEach(h => {
     const row = document.createElement("div"); row.className = "habit";
     row.innerHTML = `<span>${h}</span>`;
@@ -143,7 +104,7 @@ function renderDay() {
     row.appendChild(cb); card.appendChild(row);
   });
 
-  // Bonus Habit
+  // --- BONUS HABIT (Sicher eingefügt) ---
   const bonusKey = "custom_habit_name";
   const bName = localStorage.getItem(bonusKey) || "Bonus-Habit";
   const bRow = document.createElement("div"); bRow.className = "habit";
@@ -155,16 +116,15 @@ function renderDay() {
   bCb.onchange = () => { data["bonus_habit_status"] = bCb.checked; localStorage.setItem(key, JSON.stringify(data)); };
   bRow.appendChild(bInp); bRow.appendChild(bCb); card.appendChild(bRow);
 
-  const todayBtn = document.getElementById("todayBtn");
+  // Heute Button
   const isToday = currentDate.toDateString() === new Date().toDateString();
-  if (todayBtn) todayBtn.style.display = isToday ? "none" : "inline-block";
+  document.getElementById("todayBtn").style.display = isToday ? "none" : "inline-block";
 }
 
 function updateStatistics() {
   const container = document.getElementById("statsContainer");
   if (!container) return; container.innerHTML = "";
   let totalPercent = 0, focusHTML = "", trendHTML = "";
-
   for (let i = 0; i < 7; i++) {
     const d = new Date(); d.setDate(d.getDate() - i);
     const key = iso(d); const data = JSON.parse(localStorage.getItem(key)) || {};
@@ -172,12 +132,11 @@ function updateStatistics() {
     if (data["bonus_habit_status"] === true) done++;
     const percent = Math.round((done / (HABITS.length + 1)) * 100);
     totalPercent += percent;
-
     const label = i === 0 ? "Heute" : d.toLocaleDateString("de-DE", {weekday: 'short'});
-    trendHTML += `<div class="trend-row"><div class="trend-day">${label}</div><div class="trend-bar-bg"><div class="trend-bar-fill" style="width: ${percent}%"></div></div><div class="trend-percent">${percent}%</div></div>`;
+    trendHTML += `<div class="trend-row"><div class="trend-day">${label}</div><div class="trend-bar-bg"><div class="trend-bar-fill" style="width:${percent}%"></div></div><div class="trend-percent">${percent}%</div></div>`;
     if (data.task || data.note) focusHTML += `<div class="focus-item"><span>${label}:</span> ${data.task || data.note}</div>`;
   }
-  container.innerHTML = `<div class="stats-grid"><div class="stat-tile"><span class="stat-val">${Math.round(totalPercent/7)}%</span><span class="stat-label">Schnitt</span></div><div class="stat-tile"><span class="stat-val">7</span><span class="stat-label">Tage aktiv</span></div></div><div class="stats-card"><div style="font-weight:bold; margin-bottom:10px; font-size:0.8rem; text-transform:uppercase;">Erfüllung</div>${trendHTML}</div><div class="focus-history"><div style="font-weight:bold; margin-bottom:5px; font-size:0.8rem; text-transform:uppercase;">Fokus-Rückblick</div>${focusHTML || 'Keine Einträge'}</div>`;
+  container.innerHTML = `<div class="stats-grid"><div class="stat-tile"><span class="stat-val">${Math.round(totalPercent/7)}%</span><span class="stat-label">Schnitt</span></div><div class="stat-tile"><span class="stat-val">7</span><span class="stat-label">Tage</span></div></div><div class="stats-card">${trendHTML}</div><div class="focus-history">${focusHTML || 'Keine Einträge'}</div>`;
 }
 
 function switchView(viewId, el) {
@@ -188,29 +147,11 @@ function switchView(viewId, el) {
   if (viewId === 'stats') updateStatistics();
 }
 
-function animateDay(dir, fn) {
-  const card = document.getElementById("dayCard");
-  card.classList.add(dir === "left" ? "slide-out-left" : "slide-out-right");
-  setTimeout(() => {
-    fn(); renderDay();
-    card.classList.remove("slide-out-left", "slide-out-right");
-    card.classList.add(dir === "left" ? "slide-in-right" : "slide-in-left");
-    setTimeout(() => card.classList.remove("slide-in-left", "slide-in-right"), 180);
-  }, 180);
-}
-
-function nextDay() { animateDay("left", () => currentDate.setDate(currentDate.getDate() + 1)); }
-function prevDay() { animateDay("right", () => currentDate.setDate(currentDate.getDate() - 1)); }
+function nextDay() { currentDate.setDate(currentDate.getDate() + 1); renderDay(); }
+function prevDay() { currentDate.setDate(currentDate.getDate() - 1); renderDay(); }
 function goToday() { currentDate = new Date(); renderDay(); }
 
 renderDay();
-
-let tX = 0;
-document.addEventListener("touchstart", e => tX = e.changedTouches[0].screenX);
-document.addEventListener("touchend", e => {
-  const diff = e.changedTouches[0].screenX - tX;
-  if (Math.abs(diff) > 60) diff > 0 ? prevDay() : nextDay();
-});
 </script>
 </body>
 </html>
