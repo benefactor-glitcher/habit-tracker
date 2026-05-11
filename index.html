@@ -4,53 +4,52 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>My Way</title>
-
 <style>
 :root {
   --bg: #f2f4f8; --fg: #111; --box: #ffffff; --border: #d1d5db;
-  --accent: #2563eb; --muted: #6b7280; font-size: 15px;
+  --accent: #2563eb; --muted: #6b7280; font-size: 14px; /* Basis-Schrift leicht verkleinert */
 }
 body {
-  margin: 0; padding: 12px; font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
-  background: var(--bg); color: var(--fg);
+  margin: 0; padding: 8px; font-family: -apple-system, BlinkMacSystemFont, Arial, sans-serif;
+  background: var(--bg); color: var(--fg); overflow-x: hidden;
 }
 header { position: sticky; top: 0; background: var(--bg); padding-bottom: 4px; z-index: 50; }
 .header-row { display: flex; justify-content: space-between; align-items: center; }
 .header-center { text-align: center; }
-.header-center strong { display: block; }
-button { border: none; background: var(--accent); color: white; padding: 6px 10px; border-radius: 8px; font-size: 0.85rem; }
-.icon-btn { padding: 6px 8px; font-size: 1rem; }
-.day-card { background: var(--box); border: 1px solid var(--border); border-radius: 14px; padding: 12px; margin-top: 8px; }
-.habit { display: flex; justify-content: space-between; align-items: center; padding: 8px 6px; border-bottom: 1px solid var(--border); font-size: 0.9rem; }
-input[type="checkbox"] { width: 24px; height: 24px; accent-color: var(--accent); margin-left: 10px; }
+.header-center strong { display: block; font-size: 0.9rem; }
+button { border: none; background: var(--accent); color: white; padding: 4px 8px; border-radius: 8px; font-size: 0.8rem; }
+.icon-btn { padding: 4px 8px; font-size: 1.1rem; background: transparent; color: var(--accent); font-weight: bold; }
 
+.day-card { background: var(--box); border: 1px solid var(--border); border-radius: 12px; padding: 10px; margin-top: 4px; }
+
+/* Kompakterer Fokus-Bereich */
 .task-container {
-  background-color: #adff2f !important; padding: 12px !important; border-radius: 12px !important;
-  margin-bottom: 12px !important; border-left: 6px solid #76b900 !important; box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  background-color: #adff2f !important; padding: 8px 10px !important; border-radius: 10px !important;
+  margin-bottom: 8px !important; border-left: 5px solid #76b900 !important; box-shadow: 0 1px 4px rgba(0,0,0,0.1);
 }
-.task-header { margin-bottom: 2px !important; font-weight: 900 !important; font-size: 0.7rem !important; color: #3e6300 !important; text-transform: uppercase; }
-#taskInput { width: 100% !important; border: none !important; background: transparent !important; color: #000 !important; font-size: 1.1rem !important; font-weight: 700 !important; outline: none !important; }
+.task-header { margin-bottom: 0 !important; font-weight: 900 !important; font-size: 0.65rem !important; color: #3e6300 !important; text-transform: uppercase; }
+#taskInput { width: 100% !important; border: none !important; background: transparent !important; color: #000 !important; font-size: 1rem !important; font-weight: 700 !important; outline: none !important; }
 
-.tab-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 65px; background: var(--box); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 100; }
-.tab-item { flex: 1; text-align: center; font-size: 0.75rem; color: var(--muted); cursor: pointer; }
+/* Engere Habits */
+.habit { display: flex; justify-content: space-between; align-items: center; padding: 6px 4px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+.habit:last-child { border-bottom: none; }
+input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent); margin-left: 8px; flex-shrink: 0; }
+
+.tab-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: var(--box); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 100; }
+.tab-item { flex: 1; text-align: center; font-size: 0.7rem; color: var(--muted); cursor: pointer; }
 .tab-item.active { color: var(--accent); font-weight: bold; }
-.view { display: none; padding-bottom: 80px; }
+.view { display: none; padding-bottom: 70px; }
 .view.active { display: block; }
 
-.stats-card { background: var(--box); border: 1px solid var(--border); border-radius: 16px; padding: 15px; }
-.trend-row { display: flex; align-items: center; margin-bottom: 12px; }
-.trend-day { width: 45px; font-size: 0.8rem; font-weight: bold; }
-.trend-bar-bg { flex-grow: 1; height: 12px; background: var(--bg); border-radius: 6px; margin: 0 10px; overflow: hidden; }
+/* Statistik kompakt */
+.stats-card { background: var(--box); border: 1px solid var(--border); border-radius: 12px; padding: 12px; }
+.trend-row { display: flex; align-items: center; margin-bottom: 8px; }
+.trend-day { width: 40px; font-size: 0.75rem; font-weight: bold; }
+.trend-bar-bg { flex-grow: 1; height: 10px; background: var(--bg); border-radius: 5px; margin: 0 8px; overflow: hidden; }
 .trend-bar-fill { height: 100%; background: #adff2f; transition: width 0.5s ease; }
-.trend-percent { width: 35px; text-align: right; font-size: 0.75rem; color: var(--muted); }
-.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-.stat-tile { background: var(--box); padding: 12px; border-radius: 12px; border: 1px solid var(--border); text-align: center; }
-.stat-val { display: block; font-size: 1.2rem; font-weight: 800; color: #84cc16; }
-.stat-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; }
-.focus-history { margin-top: 20px; }
-.focus-item { font-size: 0.85rem; padding: 8px 0; border-bottom: 1px dashed var(--border); }
-.focus-item span { color: var(--muted); margin-right: 8px; font-weight: bold; }
-.today-btn { margin-top: 4px; padding: 4px 10px; font-size: 0.75rem; border-radius: 999px; background: rgba(37, 99, 235, 0.15); color: var(--accent); }
+.trend-percent { width: 30px; text-align: right; font-size: 0.7rem; color: var(--muted); }
+
+.today-btn { margin-top: 2px; padding: 2px 8px; font-size: 0.7rem; border-radius: 999px; background: rgba(37, 99, 235, 0.15); color: var(--accent); }
 
 @media (prefers-color-scheme: dark) {
   :root { --bg: #0f172a; --fg: #e5e7eb; --box: #1e293b; --border: #334155; --muted: #9ca3af; }
@@ -74,8 +73,8 @@ input[type="checkbox"] { width: 24px; height: 24px; accent-color: var(--accent);
 </div>
 
 <div id="view-stats" class="view">
-  <div style="padding: 20px;">
-    <h2>7-Tage-Trend</h2>
+  <div style="padding: 15px;">
+    <h2 style="font-size: 1.2rem;">7-Tage-Trend</h2>
     <div id="statsContainer"></div>
   </div>
 </div>
@@ -87,8 +86,8 @@ input[type="checkbox"] { width: 24px; height: 24px; accent-color: var(--accent);
 
 <script>
 const HABITS = [
-  "Schlafhygiene eingehalten (22:00–05:00)", "Morgensport / Yoga", "Alle 3x Aktivitätsringe abgeschlossen",
-  "10k Alltagsschritte gemacht", "Protein mind. 200g", "Pures Wasser mind. 2L",
+  "Schlafhygiene (22:00–05:00)", "Morgensport / Yoga", "3x Aktivitätsringe",
+  "10k Alltagsschritte", "Protein mind. 200g", "Pures Wasser mind. 2L",
   "No P*rn", "Zähne putzen (Morgens)", "Zähne putzen (Abends)"
 ];
 
@@ -107,13 +106,12 @@ function renderDay() {
   const data = JSON.parse(localStorage.getItem(key)) || {};
   
   document.getElementById("dateLabel").textContent = currentDate.toLocaleDateString("de-DE", { 
-    weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" 
+    weekday: "long", day: "2-digit", month: "2-digit"
   }) + " (KW " + weekNumber(currentDate) + ")";
 
   const card = document.getElementById("dayCard");
   card.innerHTML = "";
 
-  // Fokus Bereich
   const taskBox = document.createElement("div");
   taskBox.className = "task-container";
   taskBox.innerHTML = `<div class="task-header">Fokus des Tages</div>`;
@@ -124,7 +122,6 @@ function renderDay() {
   taskBox.appendChild(tInp);
   card.appendChild(taskBox);
 
-  // Habits rendern
   HABITS.forEach(h => {
     const row = document.createElement("div");
     row.className = "habit";
@@ -137,16 +134,15 @@ function renderDay() {
     card.appendChild(row);
   });
 
-  // Bonus Habit
   const bonusKey = "custom_habit_name";
   const bName = localStorage.getItem(bonusKey) || "Bonus-Habit";
   const bRow = document.createElement("div");
   bRow.className = "habit";
   bRow.style.borderTop = "1px solid var(--accent)";
-  bRow.style.marginTop = "4px"; bRow.style.paddingTop = "8px";
+  bRow.style.marginTop = "4px"; bRow.style.paddingTop = "4px";
   
   const bInp = document.createElement("input");
-  bInp.style = "border:none; background:transparent; font-size:0.9rem; font-weight:bold; width:70%; color:var(--fg); outline:none;";
+  bInp.style = "border:none; background:transparent; font-size:0.85rem; font-weight:bold; width:70%; color:var(--fg); outline:none;";
   bInp.value = bName;
   bInp.onchange = () => localStorage.setItem(bonusKey, bInp.value);
   
@@ -162,7 +158,6 @@ function renderDay() {
   bRow.appendChild(bCb);
   card.appendChild(bRow);
 
-  // Heute Button Logik
   const todayBtn = document.getElementById("todayBtn");
   const isToday = currentDate.toDateString() === new Date().toDateString();
   if (todayBtn) todayBtn.style.display = isToday ? "none" : "inline-block";
@@ -172,43 +167,22 @@ function updateStatistics() {
   const container = document.getElementById("statsContainer");
   if (!container) return;
   container.innerHTML = "";
-  
-  let totalPercent = 0, focusHTML = "", trendHTML = "";
+  let totalPercent = 0, trendHTML = "";
 
   for (let i = 0; i < 7; i++) {
     const d = new Date(); d.setDate(d.getDate() - i);
     const key = iso(d);
     const data = JSON.parse(localStorage.getItem(key)) || {};
-    
     let done = 0;
     HABITS.forEach(h => { if (data[h] === true) done++; });
     if (data["bonus_habit_status"] === true) done++;
-    
     const percent = Math.round((done / (HABITS.length + 1)) * 100);
     totalPercent += percent;
-
-    const label = i === 0 ? "Heute" : d.toLocaleDateString("de-DE", {weekday: 'short'});
-    trendHTML += `
-      <div class="trend-row">
-        <div class="trend-day">${label}</div>
-        <div class="trend-bar-bg"><div class="trend-bar-fill" style="width:${percent}%"></div></div>
-        <div class="trend-percent">${percent}%</div>
-      </div>`;
-
-    const taskText = data.task || data.note;
-    if (taskText) focusHTML += `<div class="focus-item"><span>${label}:</span> ${taskText}</div>`;
+    const label = i === 0 ? "Heu" : d.toLocaleDateString("de-DE", {weekday: 'short'});
+    trendHTML += `<div class="trend-row"><div class="trend-day">${label}</div><div class="trend-bar-bg"><div class="trend-bar-fill" style="width:${percent}%"></div></div><div class="trend-percent">${percent}%</div></div>`;
   }
 
-  container.innerHTML = `
-    <div class="stats-grid">
-      <div class="stat-tile"><span class="stat-val">${Math.round(totalPercent/7)}%</span><span class="stat-label">Schnitt</span></div>
-      <div class="stat-tile"><span class="stat-val">7</span><span class="stat-label">Tage</span></div>
-    </div>
-    <div class="stats-card"><div style="font-weight:bold; margin-bottom:10px; font-size:0.8rem; text-transform:uppercase;">Erfüllung</div>${trendHTML}</div>
-    <div class="focus-history">
-      <div style="font-weight:bold; margin:20px 0 5px 0; font-size:0.8rem; text-transform:uppercase;">Letzte Fokus-Tasks</div>
-      ${focusHTML || '<div class="focus-item">Keine Einträge</div>'}
-    </div>`;
+  container.innerHTML = `<div class="stats-card">${trendHTML}</div><p style="text-align:center; color:var(--muted); font-size:0.8rem;">Wochenschnitt: ${Math.round(totalPercent/7)}%</p>`;
 }
 
 function switchView(viewId, el) {
@@ -223,13 +197,24 @@ function nextDay() { currentDate.setDate(currentDate.getDate() + 1); renderDay()
 function prevDay() { currentDate.setDate(currentDate.getDate() - 1); renderDay(); }
 function goToday() { currentDate = new Date(); renderDay(); }
 
-// Swipe Logik
-let tX = 0;
-document.addEventListener("touchstart", e => tX = e.changedTouches[0].screenX);
-document.addEventListener("touchend", e => {
-  const diff = e.changedTouches[0].screenX - tX;
-  if (Math.abs(diff) > 60) diff > 0 ? prevDay() : nextDay();
-});
+// --- SWIPE LOGIK REPARIERT ---
+let touchstartX = 0;
+let touchendX = 0;
+
+function handleGesture() {
+  const threshold = 50;
+  if (touchendX < touchstartX - threshold) nextDay();
+  if (touchendX > touchstartX + threshold) prevDay();
+}
+
+document.addEventListener('touchstart', e => {
+  touchstartX = e.changedTouches[0].screenX;
+}, false);
+
+document.addEventListener('touchend', e => {
+  touchendX = e.changedTouches[0].screenX;
+  handleGesture();
+}, false);
 
 renderDay();
 </script>
