@@ -342,7 +342,6 @@ input[type="checkbox"] {
       <button class="icon-btn" onclick="nextDay()">→</button>
     </div>
   </header>
-
   <section class="day-card" id="dayCard"></section>
 </div>
 
@@ -599,6 +598,62 @@ function switchView(viewId, element) {
   if (viewId === 'stats') {
     updateStatistics();
   }
+}
+function switchView(viewId, element) {
+  // Views umschalten
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + viewId).classList.add('active');
+  
+  // Tabs optisch umschalten
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  element.classList.add('active');
+
+  if (viewId === 'stats') updateStatistics();
+}
+
+function updateStatistics() {
+  const container = document.getElementById("statsContainer");
+  if (!container) return;
+  container.innerHTML = "";
+  
+  let totalPercent = 0;
+  let focusHistoryHTML = "";
+  let trendHTML = "";
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = iso(d);
+    const data = JSON.parse(localStorage.getItem(key)) || {};
+    
+    let done = 0;
+    HABITS.forEach(h => { if (data[h] === true) done++; });
+    const percent = Math.round((done / HABITS.length) * 100);
+    totalPercent += percent;
+
+    const dayLabel = i === 0 ? "Heute" : d.toLocaleDateString("de-DE", {weekday: 'short'});
+    trendHTML += `
+      <div class="trend-row">
+        <div class="trend-day">${dayLabel}</div>
+        <div class="trend-bar-bg"><div class="trend-bar-fill" style="width: ${percent}%"></div></div>
+        <div class="trend-percent">${percent}%</div>
+      </div>`;
+
+    if (data.task || data.note) {
+      focusHistoryHTML += `<div class="focus-item"><span>${dayLabel}:</span> ${data.task || data.note}</div>`;
+    }
+  }
+
+  container.innerHTML = `
+    <div class="stats-grid">
+      <div class="stat-tile"><span class="stat-val">${Math.round(totalPercent/7)}%</span><span class="stat-label">Wochen-Schnitt</span></div>
+      <div class="stat-tile"><span class="stat-val">7</span><span class="stat-label">Tage aktiv</span></div>
+    </div>
+    <div class="stats-card"><div style="font-weight:bold; margin-bottom:10px; font-size:0.8rem; text-transform:uppercase;">Erfüllung</div>${trendHTML}</div>
+    <div class="focus-history" style="margin-top:20px;">
+      <div style="font-weight:bold; margin-bottom:5px; font-size:0.8rem; text-transform:uppercase;">Letzte Fokus-Tasks</div>
+      ${focusHistoryHTML || '<div class="focus-item">Noch keine Einträge</div>'}
+    </div>`;
 }
 </script>
 
