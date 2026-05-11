@@ -29,7 +29,7 @@ header {
   position: sticky;
   top: 0;
   background: var(--bg);
-  padding-bottom: 8px;
+  padding-bottom: 4px;
   z-index: 50;
 }
 
@@ -72,7 +72,7 @@ button {
   border: 1px solid var(--border);
   border-radius: 14px;
   padding: 12px;
-  margin-top: 12px;
+  margin-top: 8px;
 }
 
 /* Habits */
@@ -80,29 +80,27 @@ button {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 10px 6px;
+  /* Weniger vertikaler Abstand (von 10px auf 6px) */
+  padding: 6px 6px; 
   border-bottom: 1px solid var(--border);
-  font-size: 0.95rem;
-}
-
-.habit:last-child {
-  border-bottom: none;
+  font-size: 0.9rem; /* Leicht verkleinerte Schrift */
 }
 
 input[type="checkbox"] {
-  width: 26px;
-  height: 26px;
+  /* Kompakter, aber immer noch gut mit dem Daumen treffbar */
+  width: 22px;
+  height: 22px;
   accent-color: var(--accent);
+  margin-left: 10px;
 }
 
 /* Fokus des Tages - Giftgrün Highlight */
 .task-container {
-  background: rgba(132, 204, 22, 0.2) !important; /* Giftgrüner Hintergrund */
-  padding: 12px !important;
-  border-radius: 12px !important;
-  margin-bottom: 15px !important;
-  border-left: 5px solid #84cc16 !important; /* Kräftige giftgrüne Linie */
-  display: block !important;
+  background-color: #adff2f !important;
+  padding: 8px 12px !important; /* Vertikales Padding reduziert */
+  border-radius: 10px !important;
+  margin-bottom: 8px !important; /* Abstand nach unten halbiert */
+  border-left: 5px solid #76b900 !important;
 }
 
 .task-header {
