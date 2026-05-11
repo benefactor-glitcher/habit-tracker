@@ -449,10 +449,51 @@ function renderDay() {
       localStorage.setItem(key, JSON.stringify(data));
     };
 
-    row.appendChild(label);
+   row.appendChild(label);
     row.appendChild(cb);
     card.appendChild(row);
-  });
+  }); // Ende der HABITS.forEach Schleife
+
+  // --- NEU: HIER DEN BONUS-HABIT EINFÜGEN ---
+  const bonusKey = "custom_habit_name"; 
+  const currentBonusName = localStorage.getItem(bonusKey) || "Bonus-Habit";
+
+  const bonusRow = document.createElement("div");
+  bonusRow.className = "habit";
+  // Eine feine Linie zur optischen Trennung
+  bonusRow.style.borderTop = "1px solid var(--accent)"; 
+  bonusRow.style.marginTop = "4px";
+  bonusRow.style.paddingTop = "8px";
+
+  // Eingabefeld für den Namen
+  const bonusLabelInp = document.createElement("input");
+  bonusLabelInp.style.border = "none";
+  bonusLabelInp.style.background = "transparent";
+  bonusLabelInp.style.fontSize = "0.9rem";
+  bonusLabelInp.style.fontWeight = "bold";
+  bonusLabelInp.style.width = "70%";
+  bonusLabelInp.style.color = "var(--fg)";
+  bonusLabelInp.value = currentBonusName;
+  bonusLabelInp.placeholder = "Bonus-Habit benennen...";
+  
+  bonusLabelInp.onchange = () => {
+    localStorage.setItem(bonusKey, bonusLabelInp.value);
+  };
+
+  // Checkbox für den Bonus
+  const bonusCb = document.createElement("input");
+  bonusCb.type = "checkbox";
+  bonusCb.checked = data["bonus_habit_status"] === true;
+
+  bonusCb.onchange = () => {
+    data["bonus_habit_status"] = bonusCb.checked;
+    localStorage.setItem(key, JSON.stringify(data));
+  };
+
+  bonusRow.appendChild(bonusLabelInp);
+  bonusRow.appendChild(bonusCb);
+  card.appendChild(bonusRow);
+});
 
   // Heute-Button Logik
   const todayBtn = document.getElementById("todayBtn");
