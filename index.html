@@ -24,17 +24,29 @@ button { border: none; background: var(--accent); color: white; padding: 4px 8px
 
 /* Kompakterer Fokus-Bereich */
 .task-container {
-  background-color: #adff2f !important; padding: 8px 10px !important; border-radius: 10px !important;
-  margin-bottom: 8px !important; border-left: 5px solid #76b900 !important; box-shadow: 0 1px 4px rgba(0,0,0,0.1);
+  padding: 4px 10px !important; /* Spart vertikalen Platz */
+  margin-bottom: 6px !important;
 }
 .task-header { margin-bottom: 0 !important; font-weight: 900 !important; font-size: 0.65rem !important; color: #3e6300 !important; text-transform: uppercase; }
 #taskInput { width: 100% !important; border: none !important; background: transparent !important; color: #000 !important; font-size: 1rem !important; font-weight: 700 !important; outline: none !important; }
 
 /* Engere Habits */
-.habit { display: flex; justify-content: space-between; align-items: center; padding: 6px 4px; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+.habit { 
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center; 
+  padding: 2px 6px !important; /* Extrem schmaler für weniger Scrollen */
+  border-bottom: 1px solid var(--border); 
+  font-size: 0.85rem; 
+}
 .habit:last-child { border-bottom: none; }
-input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent); margin-left: 8px; flex-shrink: 0; }
-
+input[type="checkbox"] { 
+  width: 20px; 
+  height: 20px; 
+  accent-color: var(--accent); 
+  margin-left: 8px; 
+  flex-shrink: 0; 
+}
 .tab-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 60px; background: var(--box); border-top: 1px solid var(--border); display: flex; justify-content: space-around; align-items: center; z-index: 100; }
 .tab-item { flex: 1; text-align: center; font-size: 0.7rem; color: var(--muted); cursor: pointer; }
 .tab-item.active { color: var(--accent); font-weight: bold; }
@@ -197,24 +209,15 @@ function nextDay() { currentDate.setDate(currentDate.getDate() + 1); renderDay()
 function prevDay() { currentDate.setDate(currentDate.getDate() - 1); renderDay(); }
 function goToday() { currentDate = new Date(); renderDay(); }
 
-// --- SWIPE LOGIK REPARIERT ---
+// --- SWIPE LOGIK FIX ---
 let touchstartX = 0;
 let touchendX = 0;
-
-function handleGesture() {
-  const threshold = 50;
-  if (touchendX < touchstartX - threshold) nextDay();
-  if (touchendX > touchstartX + threshold) prevDay();
-}
-
-document.addEventListener('touchstart', e => {
-  touchstartX = e.changedTouches[0].screenX;
-}, false);
-
+document.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; }, {passive: true});
 document.addEventListener('touchend', e => {
-  touchendX = e.changedTouches[0].screenX;
-  handleGesture();
-}, false);
+    touchendX = e.changedTouches[0].screenX;
+    if (touchendX < touchstartX - 70) nextDay();
+    if (touchendX > touchstartX + 70) prevDay();
+}, {passive: true});
 
 renderDay();
 </script>
