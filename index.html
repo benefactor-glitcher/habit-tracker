@@ -129,6 +129,7 @@ input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent);
 </nav>
 
 <script>
+// 1. Grundlegende Daten & Hilfsfunktionen zuerst definieren
 const HABITS = [
   "Schlafhygiene (22:00–05:00)", "Morgensport / Yoga", "Alle 3x Aktivitätsringe",
   "10k Alltagsschritte", "Protein mind. 200g", "Pures Wasser mind. 2L",
@@ -136,67 +137,136 @@ const HABITS = [
 ];
 
 let currentDate = new Date();
-const iso = (d) => d.toISOString().slice(0,10);
 
-function weekNumber(d){
-  d = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-  d.setUTCDate(d.getUTCDate() + 4 - (d.getUTCDay() || 7));
-  return Math.ceil((((d - new Date(Date.UTC(d.getUTCFullYear(),0,1))) / 86400000) + 1)/7);
+// Diese Funktion muss VOR renderDay stehen
+const iso = (d) => {
+  try {
+    return d.toISOString().slice(0, 10);
+  } catch(e) {
+    return new Date().toISOString().slice(0, 10);
+  }
+};
+
+function weekNumber(d) {
+  const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
+  date.setUTCDate(date.getUTCDate() + 4 - (date.getUTCDay() || 7));
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  return Math.ceil((((date - yearStart) / 86400000) + 1) / 7);
 }
 
+// 2. Die Hauptfunktion
 function renderDay() {
   const key = iso(currentDate);
-  const data = JSON.parse(localStorage.getItem(key)) || {};
+  let data = {};
   
-  document.getElementById("dateLabel").textContent = currentDate.toLocaleDateString("de-DE", { weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" }) + " (KW " + weekNumber(currentDate) + ")";
+  try {
+    const saved = localStorage.getItem(key);
+    if (saved) data = JSON.parse(saved);
+  } catch(e) { console.error("Datenfehler", e); }
 
+  // Elemente suchen (mit Sicherheitscheck)
+  const dateLabel = document.getElementById("dateLabel");
   const card = document.getElementById("dayCard");
+  const todayBtn = document.getElementById("todayBtn");
+
+  if (!dateLabel || !card) return; // Falls HTML noch nicht bereit ist
+
+  // Datum setzen
+  dateLabel.textContent = currentDate.toLocaleDateString("de-DE", { 
+    weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" 
+  }) + " (KW " + weekNumber(currentDate) + ")";
+
   card.innerHTML = "";
 
-  // Fokus Box
+  // A. Fokus Bereich
   const taskBox = document.createElement("div");
   taskBox.className = "task-container";
   taskBox.innerHTML = `<div class="task-header">Fokus des Tages</div>`;
   const tInp = document.createElement("input");
-  tInp.id = "taskInput"; tInp.value = data.task || data.note || "";
-  tInp.onchange = () => { data.task = tInp.value; localStorage.setItem(key, JSON.stringify(data)); };
+  tInp.id = "taskInput";
+  tInp.value = data.task || data.note || "";
+  tInp.placeholder = "Was ist heute wichtig?";
+  tInp.onchange = () => {
+    data.task = tInp.value;
+    localStorage.setItem(key, JSON.stringify(data));
+  };
   taskBox.appendChild(tInp);
   card.appendChild(taskBox);
 
-  // Habits
+  // B. Habits rendern
   HABITS.forEach(h => {
-    const row = document.createElement("div"); row.className = "habit";
+    const row = document.createElement("div");
+    row.className = "habit";
     row.innerHTML = `<span>${h}</span>`;
-    const cb = document.createElement("input"); cb.type = "checkbox"; cb.checked = data[h] === true;
-    cb.onchange = () => { data[h] = cb.checked; localStorage.setItem(key, JSON.stringify(data)); };
-    row.appendChild(cb); card.appendChild(row);
+    const cb = document.createElement("input");
+    cb.type = "checkbox";
+    cb.checked = data[h] === true;
+    cb.onchange = () => {
+      data[h] = cb.checked;
+      localStorage.setItem(key, JSON.stringify(data));
+    };
+    row.appendChild(cb);
+    card.appendChild(row);
   });
 
-  // Bonus Habit
+  // C. Bonus Habit
   const bonusKey = "custom_habit_name";
   const bName = localStorage.getItem(bonusKey) || "Bonus-Habit";
-  const bRow = document.createElement("div"); bRow.className = "habit";
-  bRow.style.borderTop = "1px solid var(--accent)"; bRow.style.marginTop = "4px"; bRow.style.paddingTop = "8px";
+  const bRow = document.createElement("div");
+  bRow.className = "habit";
+  bRow.style.borderTop = "1px solid var(--accent)";
+  bRow.style.marginTop = "4px";
+  bRow.style.paddingTop = "8px";
+  
   const bInp = document.createElement("input");
   bInp.style = "border:none; background:transparent; font-size:0.9rem; font-weight:bold; width:70%; color:var(--fg); outline:none;";
-  bInp.value = bName; bInp.onchange = () => localStorage.setItem(bonusKey, bInp.value);
-  const bCb = document.createElement("input"); bCb.type = "checkbox"; bCb.checked = data["bonus_habit_status"] === true;
-  bCb.onchange = () => { data["bonus_habit_status"] = bCb.checked; localStorage.setItem(key, JSON.stringify(data)); };
-  bRow.appendChild(bInp); bRow.appendChild(bCb); card.appendChild(bRow);
+  bInp.value = bName;
+  bInp.onchange = () => localStorage.setItem(bonusKey, bInp.value);
+  
+  const bCb = document.createElement("input");
+  bCb.type = "checkbox";
+  bCb.checked = data["bonus_habit_status"] === true;
+  bCb.onchange = () => {
+    data["bonus_habit_status"] = bCb.checked;
+    localStorage.setItem(key, JSON.stringify(data));
+  };
+  
+  bRow.appendChild(bInp);
+  bRow.appendChild(bCb);
+  card.appendChild(bRow);
 
-  const isToday = currentDate.toDateString() === new Date().toDateString();
-  document.getElementById("todayBtn").style.display = isToday ? "none" : "inline-block";
+  // Heute Button Logik
+  if (todayBtn) {
+    const isToday = currentDate.toDateString() === new Date().toDateString();
+    todayBtn.style.display = isToday ? "none" : "inline-block";
+  }
+}
+
+// 3. Navigation & Statistik
+function switchView(viewId, el) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  const target = document.getElementById('view-' + viewId);
+  if (target) target.classList.add('active');
+  
+  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
+  if (el) el.classList.add('active');
+  
+  if (viewId === 'stats') updateStatistics();
 }
 
 function updateStatistics() {
   const container = document.getElementById("statsContainer");
-  if (!container) return; container.innerHTML = "";
+  if (!container) return;
+  container.innerHTML = "";
   let totalPercent = 0, focusHTML = "", trendHTML = "";
 
   for (let i = 0; i < 7; i++) {
-    const d = new Date(); d.setDate(d.getDate() - i);
-    const key = iso(d); const data = JSON.parse(localStorage.getItem(key)) || {};
-    let done = 0; HABITS.forEach(h => { if (data[h] === true) done++; });
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = iso(d);
+    const data = JSON.parse(localStorage.getItem(key)) || {};
+    let done = 0;
+    HABITS.forEach(h => { if (data[h] === true) done++; });
     if (data["bonus_habit_status"] === true) done++;
     const percent = Math.round((done / (HABITS.length + 1)) * 100);
     totalPercent += percent;
@@ -206,32 +276,22 @@ function updateStatistics() {
     if (data.task || data.note) focusHTML += `<div class="focus-item"><span>${label}:</span> ${data.task || data.note}</div>`;
   }
 
-  container.innerHTML = `<div class="stats-grid"><div class="stat-tile"><span class="stat-val">${Math.round(totalPercent/7)}%</span><span class="stat-label">Schnitt</span></div><div class="stat-tile"><span class="stat-val">7</span><span class="stat-label">Tage</span></div></div><div class="stats-card">${trendHTML}</div><div class="focus-history">${focusHTML || 'Keine Einträge'}</div>`;
+  container.innerHTML = `
+    <div class="stats-grid">
+      <div class="stat-tile"><span class="stat-val">${Math.round(totalPercent/7)}%</span><span class="stat-label">Schnitt</span></div>
+      <div class="stat-tile"><span class="stat-val">7</span><span class="stat-label">Tage</span></div>
+    </div>
+    <div class="stats-card">${trendHTML}</div>
+    <div class="focus-history" style="margin-top:20px;">${focusHTML || 'Keine Einträge'}</div>`;
 }
 
-function switchView(viewId, el) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById('view-' + viewId).classList.add('active');
-  document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
-  el.classList.add('active');
-  if (viewId === 'stats') updateStatistics();
-}
-
-function animateDay(dir, fn) {
-  const c = document.getElementById("dayCard");
-  c.classList.add(dir === "left" ? "slide-out-left" : "slide-out-right");
-  setTimeout(() => { fn(); renderDay(); c.classList.remove("slide-out-left", "slide-out-right"); c.classList.add(dir === "left" ? "slide-in-right" : "slide-in-left"); setTimeout(() => c.classList.remove("slide-in-left", "slide-in-right"), 180); }, 180);
-}
-
-function nextDay() { animateDay("left", () => currentDate.setDate(currentDate.getDate() + 1)); }
-function prevDay() { animateDay("right", () => currentDate.setDate(currentDate.getDate() - 1)); }
+// Steuerung
+function nextDay() { currentDate.setDate(currentDate.getDate() + 1); renderDay(); }
+function prevDay() { currentDate.setDate(currentDate.getDate() - 1); renderDay(); }
 function goToday() { currentDate = new Date(); renderDay(); }
 
-let tX = 0;
-document.addEventListener("touchstart", e => tX = e.changedTouches[0].screenX);
-document.addEventListener("touchend", e => { const diff = e.changedTouches[0].screenX - tX; if (Math.abs(diff) > 60) diff > 0 ? prevDay() : nextDay(); });
-
-renderDay();
+// Start
+window.onload = renderDay;
 </script>
 </body>
 </html>
