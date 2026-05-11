@@ -246,34 +246,85 @@ input[type="checkbox"] {
 
 .view.active {
   display: block; /* Nur die aktive Ansicht zeigen */
+/* Tab-Bar Styling */
+.tab-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 65px;
+  background: var(--box);
+  border-top: 1px solid var(--border);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  z-index: 100;
+}
+
+.tab-item {
+  flex: 1;
+  text-align: center;
+  font-size: 0.75rem;
+  color: var(--muted);
+}
+
+.tab-item.active {
+  color: var(--accent);
+  font-weight: bold;
+}
+
+/* Views Logik */
+.view { display: none; padding-bottom: 80px; }
+.view.active { display: block; }
+
+/* Statistik Balken */
+.stats-card { background: var(--box); border: 1px solid var(--border); border-radius: 16px; padding: 15px; }
+.trend-row { display: flex; align-items: center; margin-bottom: 12px; }
+.trend-day { width: 45px; font-size: 0.8rem; font-weight: bold; }
+.trend-bar-bg { flex-grow: 1; height: 12px; background: var(--bg); border-radius: 6px; margin: 0 10px; overflow: hidden; }
+.trend-bar-fill { height: 100%; background: #adff2f; transition: width 0.5s ease; }
+.trend-percent { width: 35px; text-align: right; font-size: 0.75rem; color: var(--muted); }
 }
 </style>
 </head>
 
 <body>
 
-
-<header>
-  <div class="header-row">
-    <button class="icon-btn" onclick="prevDay()">←</button>
-
-    <div class="header-center">
-      <strong id="dateLabel"></strong>
-      <button
-        id="todayBtn"
-        class="today-btn"
-        onclick="goToday()"
-        style="display:none">
-        Heute
-      </button>
+<div id="view-tracker" class="view active">
+  <header>
+    <div class="header-row">
+      <button class="icon-btn" onclick="prevDay()">←</button>
+      <div class="header-center">
+        <strong id="dateLabel"></strong>
+        <button id="todayBtn" class="today-btn" onclick="goToday()" style="display:none">Heute</button>
+      </div>
+      <button class="icon-btn" onclick="nextDay()">→</button>
     </div>
+  </header>
 
-    <button class="icon-btn" onclick="nextDay()">→</button>
+  <section class="day-card" id="dayCard"></section>
+</div>
+
+<div id="view-stats" class="view">
+  <div style="padding: 20px;">
+    <h2 style="margin-bottom: 5px;">7-Tage-Trend</h2>
+    <small style="color: var(--muted); display: block; margin-bottom: 20px;">
+      Deine Performance der letzten Woche
+    </small>
+    <div id="statsContainer"></div>
   </div>
-</header>
+</div>
 
-<section class="day-card" id="dayCard"></section>
-
+<nav class="tab-bar">
+  <div class="tab-item active" onclick="switchView('tracker', this)">
+    <div style="font-size: 1.2rem;">📅</div>
+    Tracker
+  </div>
+  <div class="tab-item" onclick="switchView('stats', this)">
+    <div style="font-size: 1.2rem;">📊</div>
+    Statistik
+  </div>
+</nav>
 
 <script>
 /* STATE */
