@@ -291,7 +291,12 @@ function prevDay() { currentDate.setDate(currentDate.getDate() - 1); renderDay()
 function goToday() { currentDate = new Date(); renderDay(); }
 
 // Start
-window.onload = renderDay;
+// Startet die App erst, wenn wirklich alles bereit ist
+if (document.readyState === "complete" || document.readyState === "interactive") {
+    renderDay();
+} else {
+    document.addEventListener("DOMContentLoaded", renderDay);
+}
 </script>
 </body>
 </html>
