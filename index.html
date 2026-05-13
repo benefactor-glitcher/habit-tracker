@@ -193,12 +193,38 @@ function updateStatistics() {
   container.innerHTML = `<div class="stats-card">${trendHTML}</div><p style="text-align:center; color:var(--muted); font-size:0.8rem;">Wochenschnitt: ${Math.round(totalPercent/7)}%</p>`;
 }
 
+function updateFocusHistory() {
+  const container = document.getElementById("focusHistoryContainer");
+  if (!container) return;
+  container.innerHTML = "";
+  let focusHTML = "";
+
+  // Wir gehen 14 Tage zurück
+  for (let i = 0; i < 14; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = iso(d);
+    const data = JSON.parse(localStorage.getItem(key)) || {};
+    
+    const taskText = data.task || data.note;
+    if (taskText) {
+      const label = i === 0 ? "Heute" : d.toLocaleDateString("de-DE", {weekday: 'short', day: '2-digit', month: '2-digit'});
+      focusHTML += `<div class="focus-item" style="padding: 10px 0; border-bottom: 1px dashed var(--border); font-size: 0.9rem;">
+                      <span style="color: var(--muted); font-weight: bold; margin-right: 10px;">${label}:</span> 
+                      <span style="color: var(--fg); font-weight: 600;">${taskText}</span>
+                    </div>`;
+    }
+  }
+  container.innerHTML = focusHTML || '<div style="color: var(--muted); padding: 20px; text-align: center;">Noch keine Fokus-Ziele eingetragen.</div>';
+}
+
 function switchView(viewId, el) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + viewId).classList.add('active');
   document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
   if (viewId === 'stats') updateStatistics();
+if (viewId === 'focus') updateFocusHistory();
 }
 
 function nextDay() { currentDate.setDate(currentDate.getDate() + 1); renderDay(); }
