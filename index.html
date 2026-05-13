@@ -54,19 +54,49 @@ input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent);
 @media (prefers-color-scheme: dark) {
   :root { --bg: #0f172a; --fg: #e5e7eb; --box: #1e293b; --border: #334155; --muted: #9ca3af; }
 }
+/* Drei Kacheln nebeneinander */
 .stats-info-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
     margin-top: 15px;
 }
+
 .info-tile {
     background: var(--box);
     border: 1px solid var(--border);
-    border-radius: 12px;
-    padding: 10px;
+    border-radius: 10px;
+    padding: 8px 4px;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 80px;
 }
+
+/* Das neue Aktivitäts-Diagramm (Mini-Bars) */
+.activity-chart {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 60px;
+    margin-top: 20px;
+    background: var(--box);
+    padding: 15px 10px;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+}
+
+.activity-bar {
+    width: 6px;
+    background: var(--accent);
+    border-radius: 3px;
+    opacity: 0.3;
+    transition: height 0.5s ease;
+}
+
+.activity-bar.high { opacity: 1; background: #adff2f; }
+
 .info-val { display: block; font-size: 1.2rem; font-weight: bold; color: #adff2f; }
 .info-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
 .habit-list-small { text-align: left; font-size: 0.75rem; margin-top: 5px; list-style: none; padding: 0; }
@@ -202,97 +232,88 @@ card.appendChild(bRow);
 function updateStatistics() {
   const container = document.getElementById("statsContainer");
   if (!container) return;
-  container.innerHTML = "";
   
   let statsHTML = '<div class="stats-card">';
   const now = new Date();
 
-  // 1. TEIL: DIE KW-BALKEN (4 WOCHEN)
+  // 1. KW-Balken (Die letzten 4 Kalenderwochen)
   for (let w = 0; w < 4; w++) {
-    let weekDone = 0;
-    let weekTotal = 0;
+    let weekDone = 0, weekTotal = 0;
     const d = new Date();
-    // Montag der jeweiligen Woche ermitteln
     d.setDate(d.getDate() - (d.getDay() || 7) + 1 - (w * 7));
     const kwNum = weekNumber(d);
 
     for (let i = 0; i < 7; i++) {
-      const day = new Date(d);
-      day.setDate(d.getDate() + i);
+      const day = new Date(d); day.setDate(d.getDate() + i);
       const key = iso(day);
       const data = JSON.parse(localStorage.getItem(key)) || {};
-      
       if (day <= now) {
-        HABITS.forEach(h => { 
-          weekTotal++; 
-          if (data[h] === true) weekDone++; 
-        });
-        weekTotal++;
-        if (data["bonus_habit_status"] === true) weekDone++;
+        HABITS.forEach(h => { weekTotal++; if (data[h] === true) weekDone++; });
+        weekTotal++; if (data["bonus_habit_status"] === true) weekDone++;
       }
     }
     const percent = weekTotal > 0 ? Math.round((weekDone / weekTotal) * 100) : 0;
-    const label = w === 0 ? "Diese KW" : `KW ${kwNum}`;
-
     statsHTML += `
       <div class="trend-row">
-        <div class="trend-day" style="width: 70px;">${label}</div>
+        <div class="trend-day" style="width: 70px;">${w === 0 ? "Diese KW" : "KW " + kwNum}</div>
         <div class="trend-bar-bg"><div class="trend-bar-fill" style="width:${percent}%"></div></div>
         <div class="trend-percent">${percent}%</div>
       </div>`;
   }
-  statsHTML += '</div>'; // Ende der stats-card
+  statsHTML += '</div>';
 
-  // 2. TEIL: STREAKS & ANALYSE (LETZTE 30 TAGE)
-  let streak = 0;
-  let habitCounts = {};
+  // 2. Berechnung für Kacheln & Diagramm
+  let streak = 0, habitCounts = {}, activityData = [];
   HABITS.forEach(h => habitCounts[h] = 0);
 
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 28; i++) {
     const d = new Date(); d.setDate(d.getDate() - i);
-    const dayKey = iso(d);
-    const data = JSON.parse(localStorage.getItem(dayKey)) || {};
+    const data = JSON.parse(localStorage.getItem(iso(d))) || {};
     let doneCount = 0;
     
     HABITS.forEach(h => {
-      if (data[h] === true) {
-        doneCount++;
-        if (i < 7) habitCounts[h]++; 
-      }
+      if (data[h] === true) { doneCount++; if (i < 7) habitCounts[h]++; }
     });
     if (data["bonus_habit_status"] === true) doneCount++;
 
-    // Streak-Bedingung: Mind. 60% der Gesamtaufgaben erledigt
-    const dailyTarget = (HABITS.length + 1) * 0.6;
-    if (doneCount >= dailyTarget) {
-      if (i === streak) streak++; 
-    } else if (i < streak) {
-      break; 
-    }
+    if (i < 14) activityData.push((doneCount / (HABITS.length + 1)) * 100);
+
+    const target = (HABITS.length + 1) * 0.6;
+    if (doneCount >= target) { if (i === streak) streak++; } 
+    else if (i < streak) { /* streak Ende */ }
   }
 
-  // Top & Flop (7 Tage Fokus)
-  let sortedHabits = Object.keys(habitCounts).sort((a, b) => habitCounts[b] - habitCounts[a]);
-  let topHabit = sortedHabits[0] || "Keine Daten";
-  let flopHabit = sortedHabits[sortedHabits.length - 1] || "Keine Daten";
+  let sorted = Object.keys(habitCounts).sort((a, b) => habitCounts[b] - habitCounts[a]);
+  let topH = sorted[0] || "?", flopH = sorted[sorted.length - 1] || "?";
 
-  // 3. TEIL: HTML FÜR KACHELN ANFÜGEN
+  // 3. HTML für die 3 symmetrischen Kacheln
   statsHTML += `
     <div class="stats-info-grid">
       <div class="info-tile">
-        <span class="info-label">Aktueller Streak</span>
-        <span class="info-val">🔥 ${streak} Tage</span>
+        <span class="info-label">Streak</span>
+        <span class="info-val" style="font-size:1.1rem;">🔥 ${streak}</span>
       </div>
       <div class="info-tile">
-        <span class="info-label">Top Habit (7T)</span>
-        <div class="habit-list-small" style="color: #adff2f;">🏆 ${topHabit}</div>
+        <span class="info-label">Top (7T)</span>
+        <span style="font-size:0.7rem; color:#adff2f; font-weight:bold; margin-top:5px; line-height:1.1;">${topH.substring(0,12)}</span>
       </div>
-    </div>
-    <div class="info-tile" style="margin-top: 10px; text-align: left;">
-      <span class="info-label">Sorgenkind (Letzte 7 Tage)</span>
-      <div class="habit-list-small" style="color: #ef4444;">⚠️ ${flopHabit}</div>
-    </div>
-  `;
+      <div class="info-tile">
+        <span class="info-label">Flop (7T)</span>
+        <span style="font-size:0.7rem; color:#ef4444; font-weight:bold; margin-top:5px; line-height:1.1;">${flopH.substring(0,12)}</span>
+      </div>
+    </div>`;
+
+  // 4. HTML für das Aktivitäts-Diagramm
+  statsHTML += `
+    <div style="margin-top:20px;">
+      <span class="info-label" style="margin-left:5px;">14-Tage Aktivität</span>
+      <div class="activity-chart">`;
+  
+  activityData.reverse().forEach(p => {
+    statsHTML += `<div class="activity-bar ${p > 60 ? 'high' : ''}" style="height:${Math.max(p, 8)}%"></div>`;
+  });
+  
+  statsHTML += `</div></div>`;
 
   container.innerHTML = statsHTML;
 }
