@@ -72,6 +72,13 @@ input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent);
   <section class="day-card" id="dayCard"></section>
 </div>
 
+<div id="view-focus" class="view">
+  <div style="padding: 15px;">
+    <h2 style="font-size: 1.2rem;">Fokus-Historie</h2>
+    <div id="focusHistoryContainer"></div>
+  </div>
+</div>
+
 <div id="view-stats" class="view">
   <div style="padding: 15px;">
     <h2 style="font-size: 1.2rem;">7-Tage-Trend</h2>
@@ -81,7 +88,7 @@ input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent);
 
 <nav class="tab-bar">
   <div class="tab-item active" onclick="switchView('tracker', this)"><div>📅</div>Tracker</div>
-  <div class="tab-item" onclick="switchView('stats', this)"><div>📊</div>Statistik</div>
+  <div class="tab-item" onclick="switchView('focus', this)"><div>🎯</div>Fokus</div> <div class="tab-item" onclick="switchView('stats', this)"><div>📊</div>Statistik</div>
 </nav>
 
 <script>
