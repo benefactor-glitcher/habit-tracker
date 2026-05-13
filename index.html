@@ -142,29 +142,39 @@ function renderDay() {
     card.appendChild(row);
   });
 
-  const bonusKey = "custom_habit_name";
-  const bName = localStorage.getItem(bonusKey) || "Bonus-Habit";
-  const bRow = document.createElement("div");
-  bRow.className = "habit";
-  bRow.style.borderTop = "1px solid var(--accent)";
-  bRow.style.marginTop = "4px"; bRow.style.paddingTop = "4px";
-  
-  const bInp = document.createElement("input");
-  bInp.style = "border:none; background:transparent; font-size:0.85rem; font-weight:bold; width:70%; color:var(--fg); outline:none;";
-  bInp.value = bName;
-  bInp.onchange = () => localStorage.setItem(bonusKey, bInp.value);
-  
-  const bCb = document.createElement("input");
-  bCb.type = "checkbox";
-  bCb.checked = data["bonus_habit_status"] === true;
-  bCb.onchange = () => {
+  // --- FIX: Bonus-Habit täglich individuell ---
+// Wir laden den Namen nicht mehr aus einem globalen Key, 
+// sondern aus dem 'data' Objekt des jeweiligen Tages.
+const bName = data["bonus_habit_name"] || ""; // Standardmäßig leer für neuen Tag
+
+const bRow = document.createElement("div");
+bRow.className = "habit";
+bRow.style.borderTop = "1px solid var(--accent)";
+bRow.style.marginTop = "4px"; 
+bRow.style.paddingTop = "4px";
+
+const bInp = document.createElement("input");
+bInp.style = "border:none; background:transparent; font-size:0.85rem; font-weight:bold; width:70%; color:var(--fg); outline:none;";
+bInp.placeholder = "Bonus-Habit heute..."; // Platzhalter falls leer
+bInp.value = bName;
+
+// Beim Ändern des Namens wird dieser nur für das aktuelle Datum (key) gespeichert
+bInp.onchange = () => {
+    data["bonus_habit_name"] = bInp.value;
+    localStorage.setItem(key, JSON.stringify(data));
+};
+
+const bCb = document.createElement("input");
+bCb.type = "checkbox";
+bCb.checked = data["bonus_habit_status"] === true;
+bCb.onchange = () => {
     data["bonus_habit_status"] = bCb.checked;
     localStorage.setItem(key, JSON.stringify(data));
-  };
-  
-  bRow.appendChild(bInp);
-  bRow.appendChild(bCb);
-  card.appendChild(bRow);
+};
+
+bRow.appendChild(bInp);
+bRow.appendChild(bCb);
+card.appendChild(bRow);
 
   const todayBtn = document.getElementById("todayBtn");
   const isToday = currentDate.toDateString() === new Date().toDateString();
