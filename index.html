@@ -72,13 +72,6 @@ input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent);
   <section class="day-card" id="dayCard"></section>
 </div>
 
-<div id="view-focus" class="view">
-  <div style="padding: 15px;">
-    <h2 style="font-size: 1.2rem;">Fokus-Historie</h2>
-    <div id="focusHistoryContainer"></div>
-  </div>
-</div>
-
 <div id="view-stats" class="view">
   <div style="padding: 15px;">
     <h2 style="font-size: 1.2rem;">7-Tage-Trend</h2>
@@ -86,9 +79,17 @@ input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent);
   </div>
 </div>
 
+<div id="view-focus" class="view">
+  <div style="padding: 15px;">
+    <h2 style="font-size: 1.2rem;">Fokus-Historie</h2>
+    <div id="focusHistoryContainer"></div>
+  </div>
+</div>
+
 <nav class="tab-bar">
   <div class="tab-item active" onclick="switchView('tracker', this)"><div>📅</div>Tracker</div>
-  <div class="tab-item" onclick="switchView('focus', this)"><div>🎯</div>Fokus</div> <div class="tab-item" onclick="switchView('stats', this)"><div>📊</div>Statistik</div>
+  <div class="tab-item" onclick="switchView('stats', this)"><div>📊</div>Statistik</div>
+  <div class="tab-item" onclick="switchView('focus', this)"><div>🎯</div>Fokus</div>
 </nav>
 
 <script>
@@ -185,7 +186,7 @@ function updateStatistics() {
     if (data["bonus_habit_status"] === true) done++;
     const percent = Math.round((done / (HABITS.length + 1)) * 100);
     totalPercent += percent;
-    const label = i === 0 ? "Heu" : d.toLocaleDateString("de-DE", {weekday: 'short'});
+    const label = i === 0 ? "Heute" : d.toLocaleDateString("de-DE", {weekday: 'short'});
     trendHTML += `<div class="trend-row"><div class="trend-day">${label}</div><div class="trend-bar-bg"><div class="trend-bar-fill" style="width:${percent}%"></div></div><div class="trend-percent">${percent}%</div></div>`;
   }
 
