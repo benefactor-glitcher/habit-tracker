@@ -185,22 +185,53 @@ function updateStatistics() {
   const container = document.getElementById("statsContainer");
   if (!container) return;
   container.innerHTML = "";
-  let totalPercent = 0, trendHTML = "";
+  
+  let statsHTML = '<div class="stats-card">';
+  const now = new Date();
 
-  for (let i = 0; i < 7; i++) {
-    const d = new Date(); d.setDate(d.getDate() - i);
-    const key = iso(d);
-    const data = JSON.parse(localStorage.getItem(key)) || {};
-    let done = 0;
-    HABITS.forEach(h => { if (data[h] === true) done++; });
-    if (data["bonus_habit_status"] === true) done++;
-    const percent = Math.round((done / (HABITS.length + 1)) * 100);
-    totalPercent += percent;
-    const label = i === 0 ? "Heute" : d.toLocaleDateString("de-DE", {weekday: 'short'});
-    trendHTML += `<div class="trend-row"><div class="trend-day">${label}</div><div class="trend-bar-bg"><div class="trend-bar-fill" style="width:${percent}%"></div></div><div class="trend-percent">${percent}%</div></div>`;
+  // Wir berechnen die Daten für die letzten 4 Kalenderwochen
+  for (let w = 0; w < 4; w++) {
+    let weekDone = 0;
+    let weekTotal = 0;
+    
+    // Ermittle den Montag der jeweiligen Woche
+    const d = new Date();
+    d.setDate(d.getDate() - (d.getDay() || 7) + 1 - (w * 7));
+    
+    const kwNum = weekNumber(d);
+
+    // Gehe die 7 Tage der Woche durch (Mo-So)
+    for (let i = 0; i < 7; i++) {
+      const day = new Date(d);
+      day.setDate(d.getDate() + i);
+      const key = iso(day);
+      const data = JSON.parse(localStorage.getItem(key)) || {};
+      
+      // Nur Tage zählen, die nicht in der Zukunft liegen
+      if (day <= now) {
+        HABITS.forEach(h => { 
+          weekTotal++; 
+          if (data[h] === true) weekDone++; 
+        });
+        // Bonus Habit einberechnen
+        weekTotal++;
+        if (data["bonus_habit_status"] === true) weekDone++;
+      }
+    }
+
+    const percent = weekTotal > 0 ? Math.round((weekDone / weekTotal) * 100) : 0;
+    const label = w === 0 ? "Diese KW" : `KW ${kwNum}`;
+
+    statsHTML += `
+      <div class="trend-row">
+        <div class="trend-day" style="width: 70px;">${label}</div>
+        <div class="trend-bar-bg"><div class="trend-bar-fill" style="width:${percent}%"></div></div>
+        <div class="trend-percent">${percent}%</div>
+      </div>`;
   }
 
-  container.innerHTML = `<div class="stats-card">${trendHTML}</div><p style="text-align:center; color:var(--muted); font-size:0.8rem;">Wochenschnitt: ${Math.round(totalPercent/7)}%</p>`;
+  statsHTML += '</div>';
+  container.innerHTML = statsHTML;
 }
 
 function updateFocusHistory() {
