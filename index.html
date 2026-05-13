@@ -54,6 +54,22 @@ input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent);
 @media (prefers-color-scheme: dark) {
   :root { --bg: #0f172a; --fg: #e5e7eb; --box: #1e293b; --border: #334155; --muted: #9ca3af; }
 }
+/* --- NEU: Styling für das Fokus-Archiv --- */
+#focusHistoryContainer {
+  margin-top: 10px;
+  padding-bottom: 20px; /* Damit der letzte Eintrag nicht hinter der Tab-Bar verschwindet */
+}
+
+.focus-item {
+  display: flex;
+  flex-direction: column;
+  padding: 12px 0;
+  border-bottom: 1px dashed var(--border);
+}
+
+.focus-item:last-child {
+  border-bottom: none;
+}
 </style>
 </head>
 <body>
@@ -240,23 +256,29 @@ function updateFocusHistory() {
   container.innerHTML = "";
   let focusHTML = "";
 
-  // Wir gehen 14 Tage zurück
+  // Wir gehen die letzten 14 Tage durch
   for (let i = 0; i < 14; i++) {
     const d = new Date();
     d.setDate(d.getDate() - i);
     const key = iso(d);
     const data = JSON.parse(localStorage.getItem(key)) || {};
     
-    const taskText = data.task || data.note;
-    if (taskText) {
+    const taskText = data.task || "";
+    const bonusText = data.bonus_habit_name || "";
+
+    // Nur anzeigen, wenn mindestens eines der beiden Felder gefüllt ist
+    if (taskText || bonusText) {
       const label = i === 0 ? "Heute" : d.toLocaleDateString("de-DE", {weekday: 'short', day: '2-digit', month: '2-digit'});
-      focusHTML += `<div class="focus-item" style="padding: 10px 0; border-bottom: 1px dashed var(--border); font-size: 0.9rem;">
-                      <span style="color: var(--muted); font-weight: bold; margin-right: 10px;">${label}:</span> 
-                      <span style="color: var(--fg); font-weight: 600;">${taskText}</span>
-                    </div>`;
+      
+      focusHTML += `
+        <div class="focus-item" style="padding: 12px 0; border-bottom: 1px dashed var(--border);">
+          <div style="font-size: 0.75rem; color: var(--muted); font-weight: bold; margin-bottom: 4px;">${label}</div>
+          ${taskText ? `<div style="font-size: 0.95rem; font-weight: 700; color: #adff2f;">🎯 ${taskText}</div>` : ''}
+          ${bonusText ? `<div style="font-size: 0.85rem; color: var(--fg); margin-top: 2px;">✨ ${bonusText}</div>` : ''}
+        </div>`;
     }
   }
-  container.innerHTML = focusHTML || '<div style="color: var(--muted); padding: 20px; text-align: center;">Noch keine Fokus-Ziele eingetragen.</div>';
+  container.innerHTML = focusHTML || '<div style="color: var(--muted); padding: 40px; text-align: center;">Noch keine Einträge für Fokus oder Bonus vorhanden.</div>';
 }
 
 function switchView(viewId, el) {
