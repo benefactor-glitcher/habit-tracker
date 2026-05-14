@@ -72,32 +72,6 @@ input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent);
 .habit-list-small { text-align: left; font-size: 0.75rem; margin-top: 5px; list-style: none; padding: 0; }
 .habit-list-small li { margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-/* Das hier ist neu - kopiere es einfach komplett rein */
-.activity-chart {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    height: 80px;
-    display: flex;
-    align-items: flex-end;
-    justify-content: space-around;
-    padding: 10px;
-    margin-top: 5px;
-}
-
-.activity-bar {
-    width: 8px;
-    background: #adff2f; /* Unser Giftgrün */
-    border-radius: 4px 4px 0 0;
-    opacity: 0.6;
-    transition: height 0.4s ease;
-}
-
-.activity-bar.high { 
-    opacity: 1;
-    box-shadow: 0 0 8px rgba(173, 255, 47, 0.3); 
-}
-
 </style>
 </head>
 <body>
@@ -306,42 +280,19 @@ function updateStatistics() {
   statsHTML += `
     <div class="stats-info-grid">
       <div class="info-tile">
-        <span class="info-label">STREAK</span>
-        <span class="info-val" style="font-size:1.1rem;">🔥 ${streak}</span>
+        <span class="info-label">Aktueller Streak</span>
+        <span class="info-val">🔥 ${streak} Tage</span>
       </div>
       <div class="info-tile">
-        <span class="info-label">TOP (7T)</span>
-        <div style="font-size:0.75rem; color:#adff2f; font-weight:bold; margin-top:5px;">${short(topHabit)}</div>
+        <span class="info-label">Top Habit (7T)</span>
+        <div class="habit-list-small" style="color: #adff2f;">🏆 ${topHabit}</div>
       </div>
-      <div class="info-tile">
-        <span class="info-label">FLOP (7T)</span>
-        <div style="font-size:0.75rem; color:#ef4444; font-weight:bold; margin-top:5px;">${short(flopHabit)}</div>
-      </div>
-    </div>`;
-
-  // 2. Das giftgrüne Aktivitäts-Diagramm
-  // Falls du die Variable 'activityData' noch nicht hast, 
-  // müssen wir die 14-Tage-Werte kurz berechnen:
-  let activityData = [];
-  for (let i = 0; i < 14; i++) {
-    const d = new Date(); d.setDate(d.getDate() - i);
-    const data = JSON.parse(localStorage.getItem(iso(d))) || {};
-    let done = 0;
-    HABITS.forEach(h => { if (data[h] === true) done++; });
-    if (data["bonus_habit_status"] === true) done++;
-    activityData.push((done / (HABITS.length + 1)) * 100);
-  }
-
-  statsHTML += `
-    <div style="margin-top:25px;">
-      <span class="info-label" style="margin-left:5px;">14-TAGE AKTIVITÄT</span>
-      <div class="activity-chart">`;
-  
-  activityData.reverse().forEach(p => {
-    statsHTML += `<div class="activity-bar ${p > 65 ? 'high' : ''}" style="height:${Math.max(p, 10)}%"></div>`;
-  });
-  
-  statsHTML += `</div></div>`;
+    </div>
+    <div class="info-tile" style="margin-top: 10px; text-align: left;">
+      <span class="info-label">Sorgenkind (Letzte 7 Tage)</span>
+      <div class="habit-list-small" style="color: #ef4444;">⚠️ ${flopHabit}</div>
+    </div>
+  `;
 
   container.innerHTML = statsHTML;
 }
