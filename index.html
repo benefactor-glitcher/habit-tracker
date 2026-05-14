@@ -212,7 +212,6 @@ function updateStatistics() {
     let weekDone = 0;
     let weekTotal = 0;
     const d = new Date();
-    // Montag der jeweiligen Woche ermitteln
     d.setDate(d.getDate() - (d.getDay() || 7) + 1 - (w * 7));
     const kwNum = weekNumber(d);
 
@@ -241,9 +240,9 @@ function updateStatistics() {
         <div class="trend-percent">${percent}%</div>
       </div>`;
   }
-  statsHTML += '</div>'; // Ende der stats-card
+  statsHTML += '</div>';
 
-  // 2. TEIL: STREAKS & ANALYSE (LETZTE 30 TAGE)
+  // 2. TEIL: STREAKS & ANALYSE
   let streak = 0;
   let habitCounts = {};
   HABITS.forEach(h => habitCounts[h] = 0);
@@ -262,7 +261,6 @@ function updateStatistics() {
     });
     if (data["bonus_habit_status"] === true) doneCount++;
 
-    // Streak-Bedingung: Mind. 60% der Gesamtaufgaben erledigt
     const dailyTarget = (HABITS.length + 1) * 0.6;
     if (doneCount >= dailyTarget) {
       if (i === streak) streak++; 
@@ -271,12 +269,11 @@ function updateStatistics() {
     }
   }
 
-  // Top & Flop (7 Tage Fokus)
   let sortedHabits = Object.keys(habitCounts).sort((a, b) => habitCounts[b] - habitCounts[a]);
   let topHabit = sortedHabits[0] || "Keine Daten";
   let flopHabit = sortedHabits[sortedHabits.length - 1] || "Keine Daten";
 
- // 3. TEIL: HTML FÜR KACHELN ANFÜGEN
+  // 3. TEIL: KACHELN
   statsHTML += `
     <div class="stats-info-grid">
       <div class="info-tile">
@@ -294,7 +291,7 @@ function updateStatistics() {
     </div>
   `;
 
-  // --- HIER IST DAS DIAGRAMM OHNE ZEICHENFEHLER ---
+  // 4. TEIL: 14-TAGE-DIAGRAMM
   statsHTML += `
     <div style="margin-top:25px;">
       <span class="info-label" style="margin-left:5px;">14-Tage Aktivität</span>
@@ -309,6 +306,7 @@ function updateStatistics() {
     
     const p = ((done / (HABITS.length + 1)) * 100);
     
+    // Fallback: Wenn p = 0 ist (keine Daten auf GitHub), erzwingen wir 10% Höhe, damit man die leeren giftgrünen Balken sieht!
     statsHTML += `<div class="activity-bar ${p > 65 ? 'high' : ''}" style="height:${Math.max(p, 10)}%"></div>`;
   }
   
@@ -316,7 +314,6 @@ function updateStatistics() {
 
   container.innerHTML = statsHTML;
 }
-
 function updateFocusHistory() {
   const container = document.getElementById("focusHistoryContainer");
   if (!container) return;
