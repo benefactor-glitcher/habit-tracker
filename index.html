@@ -54,40 +54,25 @@ input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent);
 @media (prefers-color-scheme: dark) {
   :root { --bg: #0f172a; --fg: #e5e7eb; --box: #1e293b; --border: #334155; --muted: #9ca3af; }
 }
-/* --- Statistik-Layout: 3 schmale Spalten --- */
 .stats-info-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* Erzwingt 3 gleich breite Spalten */
-    gap: 8px;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
     margin-top: 15px;
 }
-
 .info-tile {
     background: var(--box);
     border: 1px solid var(--border);
-    border-radius: 10px;
-    padding: 10px 4px;
+    border-radius: 12px;
+    padding: 10px;
     text-align: center;
-    min-height: 85px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
 }
+.info-val { display: block; font-size: 1.2rem; font-weight: bold; color: #adff2f; }
+.info-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.habit-list-small { text-align: left; font-size: 0.75rem; margin-top: 5px; list-style: none; padding: 0; }
+.habit-list-small li { margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.info-label {
-    font-size: 0.6rem;
-    color: var(--muted);
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    margin-bottom: 4px;
-}
-
-.info-val {
-    color: #adff2f;
-    font-weight: bold;
-}
-
-/* --- Aktivitäts-Diagramm in Giftgrün --- */
+/* Das hier ist neu - kopiere es einfach komplett rein */
 .activity-chart {
     background: rgba(255, 255, 255, 0.03);
     border: 1px solid var(--border);
@@ -102,14 +87,14 @@ input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent);
 
 .activity-bar {
     width: 8px;
-    background: #adff2f; /* Giftgrün */
+    background: #adff2f; /* Unser Giftgrün */
     border-radius: 4px 4px 0 0;
-    opacity: 0.6; /* Leicht transparent für Tiefe */
+    opacity: 0.6;
     transition: height 0.4s ease;
 }
 
 .activity-bar.high { 
-    opacity: 1; /* Volle Leuchtkraft bei Erfolg */
+    opacity: 1;
     box-shadow: 0 0 8px rgba(173, 255, 47, 0.3); 
 }
 
@@ -138,9 +123,17 @@ input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent);
   </div>
 </div>
 
+<div id="view-focus" class="view">
+  <div style="padding: 15px;">
+    <h2 style="font-size: 1.2rem;">Fokus-Historie</h2>
+    <div id="focusHistoryContainer"></div>
+  </div>
+</div>
+
 <nav class="tab-bar">
   <div class="tab-item active" onclick="switchView('tracker', this)"><div>📅</div>Tracker</div>
   <div class="tab-item" onclick="switchView('stats', this)"><div>📊</div>Statistik</div>
+  <div class="tab-item" onclick="switchView('focus', this)"><div>🎯</div>Fokus</div>
 </nav>
 
 <script>
@@ -193,29 +186,39 @@ function renderDay() {
     card.appendChild(row);
   });
 
-  const bonusKey = "custom_habit_name";
-  const bName = localStorage.getItem(bonusKey) || "Bonus-Habit";
-  const bRow = document.createElement("div");
-  bRow.className = "habit";
-  bRow.style.borderTop = "1px solid var(--accent)";
-  bRow.style.marginTop = "4px"; bRow.style.paddingTop = "4px";
-  
-  const bInp = document.createElement("input");
-  bInp.style = "border:none; background:transparent; font-size:0.85rem; font-weight:bold; width:70%; color:var(--fg); outline:none;";
-  bInp.value = bName;
-  bInp.onchange = () => localStorage.setItem(bonusKey, bInp.value);
-  
-  const bCb = document.createElement("input");
-  bCb.type = "checkbox";
-  bCb.checked = data["bonus_habit_status"] === true;
-  bCb.onchange = () => {
+  // --- FIX: Bonus-Habit täglich individuell ---
+// Wir laden den Namen nicht mehr aus einem globalen Key, 
+// sondern aus dem 'data' Objekt des jeweiligen Tages.
+const bName = data["bonus_habit_name"] || ""; // Standardmäßig leer für neuen Tag
+
+const bRow = document.createElement("div");
+bRow.className = "habit";
+bRow.style.borderTop = "1px solid var(--accent)";
+bRow.style.marginTop = "4px"; 
+bRow.style.paddingTop = "4px";
+
+const bInp = document.createElement("input");
+bInp.style = "border:none; background:transparent; font-size:0.85rem; font-weight:bold; width:70%; color:var(--fg); outline:none;";
+bInp.placeholder = "Bonus-Habit heute..."; // Platzhalter falls leer
+bInp.value = bName;
+
+// Beim Ändern des Namens wird dieser nur für das aktuelle Datum (key) gespeichert
+bInp.onchange = () => {
+    data["bonus_habit_name"] = bInp.value;
+    localStorage.setItem(key, JSON.stringify(data));
+};
+
+const bCb = document.createElement("input");
+bCb.type = "checkbox";
+bCb.checked = data["bonus_habit_status"] === true;
+bCb.onchange = () => {
     data["bonus_habit_status"] = bCb.checked;
     localStorage.setItem(key, JSON.stringify(data));
-  };
-  
-  bRow.appendChild(bInp);
-  bRow.appendChild(bCb);
-  card.appendChild(bRow);
+};
+
+bRow.appendChild(bInp);
+bRow.appendChild(bCb);
+card.appendChild(bRow);
 
   const todayBtn = document.getElementById("todayBtn");
   const isToday = currentDate.toDateString() === new Date().toDateString();
@@ -225,64 +228,81 @@ function renderDay() {
 function updateStatistics() {
   const container = document.getElementById("statsContainer");
   if (!container) return;
+  container.innerHTML = "";
   
   let statsHTML = '<div class="stats-card">';
   const now = new Date();
 
-  // 1. KW-Trend (Balken)
+  // 1. TEIL: DIE KW-BALKEN (4 WOCHEN)
   for (let w = 0; w < 4; w++) {
-    let weekDone = 0, weekTotal = 0;
+    let weekDone = 0;
+    let weekTotal = 0;
     const d = new Date();
+    // Montag der jeweiligen Woche ermitteln
     d.setDate(d.getDate() - (d.getDay() || 7) + 1 - (w * 7));
     const kwNum = weekNumber(d);
 
     for (let i = 0; i < 7; i++) {
-      const day = new Date(d); day.setDate(d.getDate() + i);
-      const data = JSON.parse(localStorage.getItem(iso(day))) || {};
+      const day = new Date(d);
+      day.setDate(d.getDate() + i);
+      const key = iso(day);
+      const data = JSON.parse(localStorage.getItem(key)) || {};
+      
       if (day <= now) {
-        HABITS.forEach(h => { weekTotal++; if (data[h] === true) weekDone++; });
-        weekTotal++; if (data["bonus_habit_status"] === true) weekDone++;
+        HABITS.forEach(h => { 
+          weekTotal++; 
+          if (data[h] === true) weekDone++; 
+        });
+        weekTotal++;
+        if (data["bonus_habit_status"] === true) weekDone++;
       }
     }
     const percent = weekTotal > 0 ? Math.round((weekDone / weekTotal) * 100) : 0;
+    const label = w === 0 ? "Diese KW" : `KW ${kwNum}`;
+
     statsHTML += `
       <div class="trend-row">
-        <div class="trend-day" style="width: 70px;">${w === 0 ? "Diese KW" : "KW " + kwNum}</div>
+        <div class="trend-day" style="width: 70px;">${label}</div>
         <div class="trend-bar-bg"><div class="trend-bar-fill" style="width:${percent}%"></div></div>
         <div class="trend-percent">${percent}%</div>
       </div>`;
   }
-  statsHTML += '</div>';
+  statsHTML += '</div>'; // Ende der stats-card
 
-  // 2. Daten für Streak, Top/Flop & Diagramm sammeln
-  let streak = 0, habitCounts = {}, activityData = [];
+  // 2. TEIL: STREAKS & ANALYSE (LETZTE 30 TAGE)
+  let streak = 0;
+  let habitCounts = {};
   HABITS.forEach(h => habitCounts[h] = 0);
 
-  for (let i = 0; i < 28; i++) {
+  for (let i = 0; i < 30; i++) {
     const d = new Date(); d.setDate(d.getDate() - i);
-    const data = JSON.parse(localStorage.getItem(iso(d))) || {};
+    const dayKey = iso(d);
+    const data = JSON.parse(localStorage.getItem(dayKey)) || {};
     let doneCount = 0;
     
     HABITS.forEach(h => {
-      if (data[h] === true) { doneCount++; if (i < 7) habitCounts[h]++; }
+      if (data[h] === true) {
+        doneCount++;
+        if (i < 7) habitCounts[h]++; 
+      }
     });
     if (data["bonus_habit_status"] === true) doneCount++;
 
-    if (i < 14) activityData.push((doneCount / (HABITS.length + 1)) * 100);
-
-    const target = (HABITS.length + 1) * 0.6;
-    if (doneCount >= target) { if (i === streak) streak++; } 
-    else if (i < streak) { /* streak Ende */ }
+    // Streak-Bedingung: Mind. 60% der Gesamtaufgaben erledigt
+    const dailyTarget = (HABITS.length + 1) * 0.6;
+    if (doneCount >= dailyTarget) {
+      if (i === streak) streak++; 
+    } else if (i < streak) {
+      break; 
+    }
   }
 
-  // Namen kürzen für die schmalen Kacheln
-  let sorted = Object.keys(habitCounts).sort((a, b) => habitCounts[b] - habitCounts[a]);
-  const shortName = (name) => name && name.length > 12 ? name.substring(0, 10) + ".." : (name || "?");
-  
-  let topH = shortName(sorted[0]);
-  let flopH = shortName(sorted[sorted.length - 1]);
+  // Top & Flop (7 Tage Fokus)
+  let sortedHabits = Object.keys(habitCounts).sort((a, b) => habitCounts[b] - habitCounts[a]);
+  let topHabit = sortedHabits[0] || "Keine Daten";
+  let flopHabit = sortedHabits[sortedHabits.length - 1] || "Keine Daten";
 
-  // 3. Die 3 Spalten (Streak, Top, Flop)
+  // 3. TEIL: HTML FÜR KACHELN ANFÜGEN
   statsHTML += `
     <div class="stats-info-grid">
       <div class="info-tile">
@@ -291,15 +311,27 @@ function updateStatistics() {
       </div>
       <div class="info-tile">
         <span class="info-label">TOP (7T)</span>
-        <span style="font-size:0.75rem; color:#adff2f; font-weight:bold; margin-top:5px;">${topH}</span>
+        <div style="font-size:0.75rem; color:#adff2f; font-weight:bold; margin-top:5px;">${short(topHabit)}</div>
       </div>
       <div class="info-tile">
         <span class="info-label">FLOP (7T)</span>
-        <span style="font-size:0.75rem; color:#ef4444; font-weight:bold; margin-top:5px;">${flopH}</span>
+        <div style="font-size:0.75rem; color:#ef4444; font-weight:bold; margin-top:5px;">${short(flopHabit)}</div>
       </div>
     </div>`;
 
-  // 4. Das giftgrüne Aktivitäts-Diagramm
+  // 2. Das giftgrüne Aktivitäts-Diagramm
+  // Falls du die Variable 'activityData' noch nicht hast, 
+  // müssen wir die 14-Tage-Werte kurz berechnen:
+  let activityData = [];
+  for (let i = 0; i < 14; i++) {
+    const d = new Date(); d.setDate(d.getDate() - i);
+    const data = JSON.parse(localStorage.getItem(iso(d))) || {};
+    let done = 0;
+    HABITS.forEach(h => { if (data[h] === true) done++; });
+    if (data["bonus_habit_status"] === true) done++;
+    activityData.push((done / (HABITS.length + 1)) * 100);
+  }
+
   statsHTML += `
     <div style="margin-top:25px;">
       <span class="info-label" style="margin-left:5px;">14-TAGE AKTIVITÄT</span>
@@ -313,12 +345,45 @@ function updateStatistics() {
 
   container.innerHTML = statsHTML;
 }
+
+function updateFocusHistory() {
+  const container = document.getElementById("focusHistoryContainer");
+  if (!container) return;
+  container.innerHTML = "";
+  let focusHTML = "";
+
+  // Wir gehen die letzten 14 Tage durch
+  for (let i = 0; i < 14; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = iso(d);
+    const data = JSON.parse(localStorage.getItem(key)) || {};
+    
+    const taskText = data.task || "";
+    const bonusText = data.bonus_habit_name || "";
+
+    // Nur anzeigen, wenn mindestens eines der beiden Felder gefüllt ist
+    if (taskText || bonusText) {
+      const label = i === 0 ? "Heute" : d.toLocaleDateString("de-DE", {weekday: 'short', day: '2-digit', month: '2-digit'});
+      
+      focusHTML += `
+        <div class="focus-item" style="padding: 12px 0; border-bottom: 1px dashed var(--border);">
+          <div style="font-size: 0.75rem; color: var(--muted); font-weight: bold; margin-bottom: 4px;">${label}</div>
+          ${taskText ? `<div style="font-size: 0.95rem; font-weight: 700; color: #adff2f;">🎯 ${taskText}</div>` : ''}
+          ${bonusText ? `<div style="font-size: 0.85rem; color: var(--fg); margin-top: 2px;">✨ ${bonusText}</div>` : ''}
+        </div>`;
+    }
+  }
+  container.innerHTML = focusHTML || '<div style="color: var(--muted); padding: 40px; text-align: center;">Noch keine Einträge für Fokus oder Bonus vorhanden.</div>';
+}
+
 function switchView(viewId, el) {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById('view-' + viewId).classList.add('active');
   document.querySelectorAll('.tab-item').forEach(t => t.classList.remove('active'));
   el.classList.add('active');
   if (viewId === 'stats') updateStatistics();
+if (viewId === 'focus') updateFocusHistory();
 }
 
 function nextDay() { currentDate.setDate(currentDate.getDate() + 1); renderDay(); }
