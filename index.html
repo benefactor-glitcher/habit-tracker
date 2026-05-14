@@ -276,8 +276,8 @@ function updateStatistics() {
   let topHabit = sortedHabits[0] || "Keine Daten";
   let flopHabit = sortedHabits[sortedHabits.length - 1] || "Keine Daten";
 
-  // 3. TEIL: HTML FÜR KACHELN ANFÜGEN
- statsHTML += `
+ // 3. TEIL: HTML FÜR KACHELN ANFÜGEN
+  statsHTML += `
     <div class="stats-info-grid">
       <div class="info-tile">
         <span class="info-label">Aktueller Streak</span>
@@ -294,13 +294,12 @@ function updateStatistics() {
     </div>
   `;
 
-  // --- NEU: HIER IST DAS DIAGRAMM IN SEINER EINFACHSTEN FORM ---
+  // --- HIER IST DAS DIAGRAMM OHNE ZEICHENFEHLER ---
   statsHTML += `
     <div style="margin-top:25px;">
       <span class="info-label" style="margin-left:5px;">14-Tage Aktivität</span>
       <div class="activity-chart">`;
   
-  // Berechne die 14 Tage direkt beim Zeichnen
   for (let i = 13; i >= 0; i--) {
     const d = new Date(); d.setDate(d.getDate() - i);
     const data = JSON.parse(localStorage.getItem(iso(d))) || {};
@@ -310,12 +309,10 @@ function updateStatistics() {
     
     const p = ((done / (HABITS.length + 1)) * 100);
     
-    // Verknüpfung zur CSS-Klasse "activity-bar", damit es giftgrün leuchtet
     statsHTML += `<div class="activity-bar ${p > 65 ? 'high' : ''}" style="height:${Math.max(p, 10)}%"></div>`;
   }
   
   statsHTML += `</div></div>`;
-  // --- ENDE DIAGRAMM ---
 
   container.innerHTML = statsHTML;
 }
