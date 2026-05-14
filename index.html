@@ -240,7 +240,6 @@ function updateStatistics() {
         <div class="trend-percent">${percent}%</div>
       </div>`;
   }
-  statsHTML += '</div>';
 
   // 2. TEIL: STREAKS & ANALYSE
   let streak = 0;
@@ -291,11 +290,11 @@ function updateStatistics() {
     </div>
   `;
 
-  // 4. TEIL: 14-TAGE-DIAGRAMM
+  // 4. TEIL: DIAGRAMM DIREKT DAZUPACKEN (Zwingt die Anzeige auf 80px Höhe)
   statsHTML += `
-    <div style="margin-top:25px;">
-      <span class="info-label" style="margin-left:5px;">14-Tage Aktivität</span>
-      <div class="activity-chart">`;
+    <div style="margin-top: 25px;">
+      <span class="info-label" style="margin-left: 5px;">14-Tage Aktivität</span>
+      <div class="activity-chart" style="height: 80px; display: flex; align-items: flex-end; justify-content: space-around; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 8px; margin-top: 5px;">`;
   
   for (let i = 13; i >= 0; i--) {
     const d = new Date(); d.setDate(d.getDate() - i);
@@ -306,11 +305,14 @@ function updateStatistics() {
     
     const p = ((done / (HABITS.length + 1)) * 100);
     
-    // Fallback: Wenn p = 0 ist (keine Daten auf GitHub), erzwingen wir 10% Höhe, damit man die leeren giftgrünen Balken sieht!
-    statsHTML += `<div class="activity-bar ${p > 65 ? 'high' : ''}" style="height:${Math.max(p, 10)}%"></div>`;
+    // Mindesthöhe von 10% sorgt dafür, dass man auch leere Tage als kleine Balken sieht!
+    statsHTML += `<div class="activity-bar ${p > 65 ? 'high' : ''}" style="height:${Math.max(p, 10)}%; width: 15px; border-radius: 3px;"></div>`;
   }
   
   statsHTML += `</div></div>`;
+
+  // Erst HIER wird die stats-card geschlossen
+  statsHTML += '</div>';
 
   container.innerHTML = statsHTML;
 }
