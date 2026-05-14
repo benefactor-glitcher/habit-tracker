@@ -71,7 +71,15 @@ input[type="checkbox"] { width: 22px; height: 22px; accent-color: var(--accent);
 .info-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
 .habit-list-small { text-align: left; font-size: 0.75rem; margin-top: 5px; list-style: none; padding: 0; }
 .habit-list-small li { margin-bottom: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* Ändert nur die Farbe des Diagramms im Backup auf Giftgrün */
+.activity-bar {
+    background: #adff2f !important; /* Erzwingt das Giftgrün deiner KW-Balken */
+    opacity: 0.7 !important;        /* Setzt die Grund-Sichtbarkeit */
+}
 
+.activity-bar.high { 
+    opacity: 1 !important;          /* Volle Leuchtkraft für erfolgreiche Tage */
+}
 </style>
 </head>
 <body>
