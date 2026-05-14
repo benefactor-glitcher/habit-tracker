@@ -274,19 +274,19 @@ function updateStatistics() {
 
   // 3. TEIL: KACHELN
   statsHTML += `
-    <div class="stats-info-grid">
-      <div class="info-tile">
-        <span class="info-label">Aktueller Streak</span>
-        <span class="info-val">🔥 ${streak} Tage</span>
-      </div>
-      <div class="info-tile">
-        <span class="info-label">Top Habit (7T)</span>
-        <div class="habit-list-small" style="color: #adff2f;">🏆 ${topHabit}</div>
-      </div>
+   <div class="info-tile" style="text-align: left;">
+      <span class="info-label">Aktueller Streak</span>
+      <div class="habit-list-small" style="color: #adff2f; font-size: 1.2rem; font-weight: bold; margin-top: 5px;">🔥 ${streak} Tage</div>
     </div>
+    
+    <div class="info-tile" style="margin-top: 10px; text-align: left;">
+      <span class="info-label">Top Habit (7T)</span>
+      <div class="habit-list-small" style="color: #adff2f; margin-top: 5px;">🏆 ${topHabit}</div>
+    </div>
+    
     <div class="info-tile" style="margin-top: 10px; text-align: left;">
       <span class="info-label">Sorgenkind (Letzte 7 Tage)</span>
-      <div class="habit-list-small" style="color: #ef4444;">⚠️ ${flopHabit}</div>
+      <div class="habit-list-small" style="color: #ef4444; margin-top: 5px;">⚠️ ${flopHabit}</div>
     </div>
   `;
 
