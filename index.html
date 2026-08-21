@@ -241,42 +241,87 @@ function updateStatistics() {
       </div>`;
   }
 
-  // 2. TEIL: STREAKS & ANALYSE
-  let streak = 0;
+  // 2. TEIL: STREAKS & ANALYSE (Aktuelle & Längste Streak)
+  const dailyTarget = (HABITS.length + 1) * 0.6;
+  
+  // A) Aktueller Streak (mit Chance für den heutigen Tag)
+  let currentStreak = 0;
+  let checkingDay = 0;
+  
+  while (checkingDay < 365) {
+    const d = new Date(); 
+    d.setDate(d.getDate() - checkingDay);
+    const dayKey = iso(d);
+    const data = JSON.parse(localStorage.getItem(dayKey)) || {};
+    
+    let doneCount = 0;
+    HABITS.forEach(h => { if (data[h] === true) doneCount++; });
+    if (data["bonus_habit_status"] === true) doneCount++;
+
+    const isSuccess = doneCount >= dailyTarget;
+
+    if (isSuccess) {
+      currentStreak++;
+    } else {
+      // Wenn HEUTE (checkingDay === 0) noch nicht geschafft ist, reißt die Streak noch NICHT!
+      // Erst wenn ein vergangener Tag (checkingDay > 0) nicht geschafft wurde, bricht sie ab.
+      if (checkingDay > 0) {
+        break;
+      }
+    }
+    checkingDay++;
+  }
+
+  // B) Längster Streak aller Zeiten (Rekord-Historie)
+  let maxStreak = 0;
+  let tempStreak = 0;
+
+  for (let i = 365; i >= 0; i--) {
+    const d = new Date(); 
+    d.setDate(d.getDate() - i);
+    const dayKey = iso(d);
+    const data = JSON.parse(localStorage.getItem(dayKey)) || {};
+    
+    let doneCount = 0;
+    HABITS.forEach(h => { if (data[h] === true) doneCount++; });
+    if (data["bonus_habit_status"] === true) doneCount++;
+
+    if (doneCount >= dailyTarget) {
+      tempStreak++;
+      if (tempStreak > maxStreak) maxStreak = tempStreak;
+    } else {
+      tempStreak = 0; // Streak gerissen
+    }
+  }
+
+  // C) Top & Flop (Letzte 7 Tage)
   let habitCounts = {};
   HABITS.forEach(h => habitCounts[h] = 0);
 
-  for (let i = 0; i < 30; i++) {
+  for (let i = 0; i < 7; i++) {
     const d = new Date(); d.setDate(d.getDate() - i);
     const dayKey = iso(d);
     const data = JSON.parse(localStorage.getItem(dayKey)) || {};
-    let doneCount = 0;
     
     HABITS.forEach(h => {
-      if (data[h] === true) {
-        doneCount++;
-        if (i < 7) habitCounts[h]++; 
-      }
+      if (data[h] === true) habitCounts[h]++;
     });
-    if (data["bonus_habit_status"] === true) doneCount++;
-
-    const dailyTarget = (HABITS.length + 1) * 0.6;
-    if (doneCount >= dailyTarget) {
-      if (i === streak) streak++; 
-    } else if (i < streak) {
-      break; 
-    }
   }
 
   let sortedHabits = Object.keys(habitCounts).sort((a, b) => habitCounts[b] - habitCounts[a]);
   let topHabit = sortedHabits[0] || "Keine Daten";
   let flopHabit = sortedHabits[sortedHabits.length - 1] || "Keine Daten";
 
-  // 3. TEIL: KACHELN
+  // 3. TEIL: KACHELN (Sauber untereinander in gleicher Größe)
   statsHTML += `
-   <div class="info-tile" style="text-align: left;">
+    <div class="info-tile" style="text-align: left;">
       <span class="info-label">Aktueller Streak</span>
-      <div class="habit-list-small" style="color: #adff2f; font-size: 1.2rem; font-weight: bold; margin-top: 5px;">🔥 ${streak} Tage</div>
+      <div class="habit-list-small" style="color: #adff2f; font-size: 1.2rem; font-weight: bold; margin-top: 5px;">🔥 ${currentStreak} Tage</div>
+    </div>
+
+    <div class="info-tile" style="margin-top: 10px; text-align: left;">
+      <span class="info-label">Längster Streak (Rekord)</span>
+      <div class="habit-list-small" style="color: #adff2f; font-size: 1.2rem; font-weight: bold; margin-top: 5px;">⚡ ${maxStreak} Tage</div>
     </div>
     
     <div class="info-tile" style="margin-top: 10px; text-align: left;">
@@ -290,30 +335,7 @@ function updateStatistics() {
     </div>
   `;
 
-  // 4. TEIL: DIAGRAMM DIREKT DAZUPACKEN (Zwingt die Anzeige auf 80px Höhe)
-  statsHTML += `
-    <div style="margin-top: 25px;">
-      <span class="info-label" style="margin-left: 5px;">14-Tage Aktivität</span>
-      <div class="activity-chart" style="height: 80px; display: flex; align-items: flex-end; justify-content: space-around; padding: 10px; background: rgba(255,255,255,0.03); border-radius: 8px; margin-top: 5px;">`;
-  
-  for (let i = 13; i >= 0; i--) {
-    const d = new Date(); d.setDate(d.getDate() - i);
-    const data = JSON.parse(localStorage.getItem(iso(d))) || {};
-    let done = 0;
-    HABITS.forEach(h => { if (data[h] === true) done++; });
-    if (data["bonus_habit_status"] === true) done++;
-    
-    const p = ((done / (HABITS.length + 1)) * 100);
-    
-    // Mindesthöhe von 10% sorgt dafür, dass man auch leere Tage als kleine Balken sieht!
-    statsHTML += `<div class="activity-bar ${p > 65 ? 'high' : ''}" style="height:${Math.max(p, 10)}%; width: 15px; border-radius: 3px;"></div>`;
-  }
-  
-  statsHTML += `</div></div>`;
-
-  // Erst HIER wird die stats-card geschlossen
-  statsHTML += '</div>';
-
+  statsHTML += '</div>'; // Ende der stats-card
   container.innerHTML = statsHTML;
 }
 function updateFocusHistory() {
