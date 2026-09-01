@@ -402,6 +402,57 @@ document.addEventListener('touchend', e => {
 }, false);
 
 renderDay();
+// TELEGRAM NOTIFICATION SETUP
+const TELEGRAM_BOT_TOKEN = "8961621342:AAGsLCX1x-35a_pmHvajojDmhfwii4wnVSI";
+const TELEGRAM_CHAT_ID = "5683002364";
+
+function sendTelegramReminder(message) {
+  if (!TELEGRAM_BOT_TOKEN || !TELEGRAM_CHAT_ID) return;
+
+  const url = `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`;
+  
+  fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      chat_id: TELEGRAM_CHAT_ID,
+      text: message,
+      parse_mode: "Markdown"
+    })
+  }).catch(err => console.error("Telegram Fehler:", err));
+}
+
+function checkDailyReminder() {
+  const now = new Date();
+  const currentHour = now.getHours();
+
+  // Sendet die Erinnerung erst ab 20:00 Uhr
+  if (currentHour < 20) return;
+
+  const todayKey = iso(now);
+  const lastSent = localStorage.getItem("telegram_last_sent");
+
+  // Verhindert doppelte Benachrichtigungen am selben Tag
+  if (lastSent === todayKey) return;
+
+  // Tagesfortschritt prüfen
+  const data = JSON.parse(localStorage.getItem(todayKey)) || {};
+  let doneCount = 0;
+  HABITS.forEach(h => { if (data[h] === true) doneCount++; });
+  if (data["bonus_habit_status"] === true) doneCount++;
+
+  const dailyTarget = (HABITS.length + 1) * 0.6;
+
+  // Wenn das Tagesziel noch nicht erreicht ist: Reminder abfeuern!
+  if (doneCount < dailyTarget) {
+    sendTelegramReminder("⚠️ *Habit Tracker Erinnerung*\n\nDu hast dein Tagesziel heute noch nicht erreicht! Sichere jetzt deinen Streak 🔥");
+    localStorage.setItem("telegram_last_sent", todayKey);
+  }
+}
+
+// Automatische Prüfung beim Laden der Seite
+checkDailyReminder();
+
 </script>
 </body>
 </html>
